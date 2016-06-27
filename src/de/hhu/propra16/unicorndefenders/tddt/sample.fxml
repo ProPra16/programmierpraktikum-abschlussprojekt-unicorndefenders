@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<?import de.hhu.propra16.unicorndefenders.tddt.MenuEntry?>
+
+
+<BorderPane fx:controller="de.hhu.propra16.unicorndefenders.tddt.Controller"
+            styleClass="root"
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@style.css"
+            fx:id="border" id="border">
+
+    <top>
+
+            <MenuBar id="menu">
+                <Menu text="MyProgramm">
+                    <MenuItem text="open" onAction="#loadCatalog"></MenuItem>
+                    <MenuItem text="switch" onAction="#next"></MenuItem>
+                </Menu>
+                <Menu text="Options"></Menu>
+                <Menu text="Refactor"></Menu>
+                <Menu text="next" onAction="#next"></Menu>
+            </MenuBar>
+
+    </top>
+
+    <left>
+
+        <TableView onMouseClicked="#click">
+            <columns>
+                <TableColumn text="Aufgabe" prefWidth="150">
+                    <cellValueFactory ><PropertyValueFactory property="taskTitle" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="BabySteps?" prefWidth="100">
+                    <cellValueFactory><PropertyValueFactory property="babySteps" />
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <MenuEntry taskTitle="Aufgabe1" babySteps="Ja"/>
+                    <MenuEntry taskTitle="Aufgabe2" babySteps="Nein"/>
+                </FXCollections>
+            </items>
+        </TableView>
+
+    </left>
+
+    <center>
+        <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="true" minWidth="350" minHeight="460"></TextArea>
+
+    </center>
+
+    <right>
+        <TextArea id="testArea" fx:id="testArea" text="NOPNOPNOP" editable="false" minWidth="350" minHeight="460"></TextArea>
+
+    </right>
+
+    <bottom>
+        <TextArea text="UNTEN" editable="false"></TextArea>
+    </bottom>
+
+
+</BorderPane>
