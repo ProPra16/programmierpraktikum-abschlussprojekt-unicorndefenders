@@ -35,7 +35,7 @@
 
     <left>
 
-        <TableView onMouseClicked="#click">
+        <TableView fx:id="taskMenu">
             <columns>
                 <TableColumn text="Aufgabe" prefWidth="150">
                     <cellValueFactory ><PropertyValueFactory property="taskTitle" />
@@ -48,8 +48,6 @@
             </columns>
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <MenuEntry taskTitle="Aufgabe1" babySteps="Ja"/>
-                    <MenuEntry taskTitle="Aufgabe2" babySteps="Nein"/>
                 </FXCollections>
             </items>
         </TableView>
@@ -57,8 +55,11 @@
     </left>
 
     <center>
-        <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="true" minWidth="350" minHeight="460"></TextArea>
-
+        <VBox>
+            <HBox fx:id="tabManager">
+            </HBox>
+            <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="true" minWidth="350" minHeight="460"></TextArea>
+        </VBox>
     </center>
 
     <right>
