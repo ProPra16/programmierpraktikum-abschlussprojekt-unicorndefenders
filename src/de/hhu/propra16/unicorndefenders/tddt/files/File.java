@@ -6,7 +6,7 @@ package de.hhu.propra16.unicorndefenders.tddt.files;
  * Diese Klasse kann innerhalb der Anwendung verwendet werden um verschiedene Arten von
  * Dateien abzubilden.
  *
- * Diese Klasse wird erweitert von der Klasse PhysicalFile. Diese kann verwendet werden um
+ * Diese Klasse wird erweitert von der Klasse FilesystemFile. Diese kann verwendet werden um
  * Dateien physisch auf dem Dateisystem zu verwalten.
  *
  * @author Pascal
@@ -19,7 +19,7 @@ public class File {
     * Da diese Datei nicht physisch auf dem Dateisystem vorhanden ist, kann hier
     * jeder String verwendet werden, den Java akzeptiert.
     *
-    * Beachte: In der Klasse PhysicalFile muss auf Namenseinschraenkungen bzgl. des
+    * Beachte: In der Klasse FilesystemFile muss auf Namenseinschraenkungen bzgl. des
     * Dateisystems geachtet werden.
     */
    protected String logicalName;
@@ -41,4 +41,8 @@ public class File {
    }
 
    public File(){}
+
+   public String getContent() {
+      return content;
+   }
 }
