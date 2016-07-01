@@ -25,6 +25,7 @@
                 <Menu text="MyProgramm">
                     <MenuItem text="open" onAction="#loadCatalog"></MenuItem>
                     <MenuItem text="switch" onAction="#next"></MenuItem>
+                    <MenuItem text="Compile" onAction="#compileCode"></MenuItem>
                 </Menu>
                 <Menu text="Options"></Menu>
                 <Menu text="Refactor"></Menu>
@@ -35,7 +36,7 @@
 
     <left>
 
-        <TableView onMouseClicked="#click">
+        <TableView fx:id="taskMenu">
             <columns>
                 <TableColumn text="Aufgabe" prefWidth="150">
                     <cellValueFactory ><PropertyValueFactory property="taskTitle" />
@@ -48,8 +49,6 @@
             </columns>
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <MenuEntry taskTitle="Aufgabe1" babySteps="Ja"/>
-                    <MenuEntry taskTitle="Aufgabe2" babySteps="Nein"/>
                 </FXCollections>
             </items>
         </TableView>
@@ -57,17 +56,20 @@
     </left>
 
     <center>
-        <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="true" minWidth="350" minHeight="460"></TextArea>
-
+        <VBox>
+            <HBox fx:id="tabManager">
+            </HBox>
+            <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="true"  maxWidth="525" minWidth="525" minHeight="460"></TextArea>
+        </VBox>
     </center>
 
     <right>
-        <TextArea id="testArea" fx:id="testArea" text="NOPNOPNOP" editable="false" minWidth="350" minHeight="460"></TextArea>
+        <TextArea id="testArea" fx:id="testArea" text="NOPNOPNOP" editable="false" maxWidth="473" minWidth="473" minHeight="460"></TextArea>
 
     </right>
 
-    <bottom>
-        <TextArea text="UNTEN" editable="false"></TextArea>
+    <bottom >
+        <TextArea fx:id="compilerMessages" text="UNTEN" editable="false"></TextArea>
     </bottom>
 
 
