@@ -21,7 +21,7 @@ public class CompilerManager {
    private Source sourceFile;
 
    /**
-    * kompilierter und ggf. ausgefuehrter TestCode.
+    * Kompilierter und ggf. ausgefuehrter TestCode.
     */
    private TestCode testFile;
 
@@ -65,7 +65,7 @@ public class CompilerManager {
     * Diese Methode muss als erste Methode dieser Klasse nach dem Konstruktor aufgerufen werden.
     *
     * @return true, wenn der Uebersetzungsvorgang fehlerfrei verlief und die Anzahl der
-    * fehlgeschlagenen Tests den Vorgaben des Entwiclungszustandes entspricht.
+    * fehlgeschlagenen Tests den Vorgaben des Entwicklungszustandes entspricht.
     * false sonst.
     */
    public boolean run() {
