@@ -20,6 +20,9 @@ sourceSets {
       java {
          srcDir 'src/de/hhu/propra16/unicorndefenders/tddt'
       }
+      resources {
+         srcDir 'src/'
+      }
    }
 }
 
