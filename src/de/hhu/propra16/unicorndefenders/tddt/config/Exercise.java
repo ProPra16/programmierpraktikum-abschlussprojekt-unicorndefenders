@@ -25,8 +25,12 @@ public class Exercise {
    /**
     * Liste aller Klassentemplates einer Aufgabe
     */
-   /** @TODO Durch PhysicalFile ersetzen */
    private List<File> classTemplate;
+
+   /**
+    * Liste aller Testtemplates einer Aufgabe
+    */
+   private List<File> testTemplate;
 
    /**
     * Zeitlimit fuer Babysteps.
@@ -46,14 +50,14 @@ public class Exercise {
 
    public Exercise() {
       this.classTemplate = new ArrayList<>();
+      this.testTemplate = new ArrayList<>();
 
-      // Eine Aufgaben muss nicht zwingend eine Beschreibung besitzen.
+      // Eine Aufgabe muss nicht zwingend eine Beschreibung besitzen.
       description = "";
 
       babystepsEnabled = false;
-      babystepsMaxTimeInSeconds = 0;
-
       trackingEnabled = false;
+      babystepsMaxTimeInSeconds = 0;
    }
 
 
@@ -101,7 +105,15 @@ public class Exercise {
       return classTemplate;
    }
 
+   public List<File> getTestTemplate() {
+      return testTemplate;
+   }
+
    public void addClass(File classTemplate) {
       this.classTemplate.add(classTemplate);
+   }
+
+   public void addTest(File testTemplate) {
+      this.testTemplate.add(testTemplate);
    }
 }

@@ -65,6 +65,7 @@ public class ConfigParser {
     */
    public void parse() throws Exception {
       File source          = null;
+      File test            = null;
       List<File> classes   = new ArrayList<>();
 
       NodeList list = document.getElementsByTagName("exercise");
@@ -106,7 +107,22 @@ public class ConfigParser {
                   }
                }
 
-            } else if (n.getNodeName().equals(TAG_CONFIG)) {
+            } else if (n.getNodeName().equals("tests")) {
+               NodeList classList = n.getChildNodes();
+               for (int l = 0; l < classList.getLength(); l++) {
+                  Node currentConfig = classList.item(l);
+
+                  if (currentConfig.getNodeName().equals("test")) {
+                     // @TODO Hier muss der Name der Klasse ausgelesen werden.
+                     test = new File(
+                             currentConfig.getAttributes().getNamedItem("name").getNodeValue(),
+                             currentConfig.getTextContent().trim());
+
+                     currentExercise.addTest(test);
+                  }
+               }
+            }
+            else if (n.getNodeName().equals(TAG_CONFIG)) {
                NodeList configList = n.getChildNodes();
                parseExcersiceConfig(configList);
             }
