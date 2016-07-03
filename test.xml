@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<exercises>
+
+   <exercise name="Römische Zahlen">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="RomanNumber">
+            public class RomanNumberConverter {
+
+            }
+         </class>
+
+         <class name="RomanNumber2">
+            public class RomanNumberConverter2 {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test>
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class RomanNumbersTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+
+
+   <exercise name="Polynome">
+      <description> Ein kleiner Polynomrechner </description>
+
+      <classes>
+         <class name="RomanNumber">
+            public class PolynomialCalculator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test>
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class PolynomialCalculatorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="TrUe" time="122" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+</exercises>
+
+
