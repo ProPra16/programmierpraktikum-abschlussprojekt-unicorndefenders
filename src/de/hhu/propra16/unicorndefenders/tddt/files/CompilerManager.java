@@ -79,6 +79,7 @@ public class CompilerManager {
       CompilerResult compilerResult = compiler.getCompilerResult();
       if (compilerResult.hasCompileErrors()) {
          sourceFile.setCompilerErrors(compilerResult);
+         testFile.setCompilerErrors(compilerResult);
          return false;
       }
 
