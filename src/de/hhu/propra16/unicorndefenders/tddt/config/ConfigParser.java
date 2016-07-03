@@ -25,7 +25,7 @@ public class ConfigParser {
     * Eingabedatei.
     * Diese ist noch im Rohzustand, d.h. nur der Text.
     */
-   private FilesystemFile file;
+   private ReallyExistingFile file;
 
    /**
     * Aufgabenkatalog.
@@ -47,7 +47,7 @@ public class ConfigParser {
     * @throws SAXException
     * @throws IOException
     */
-   public ConfigParser(FilesystemFile file)
+   public ConfigParser(ReallyExistingFile file)
            throws ParserConfigurationException, SAXException, IOException
    {
       this.file = file;
