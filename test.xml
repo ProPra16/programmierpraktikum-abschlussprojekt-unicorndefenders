@@ -26,6 +26,15 @@
             public void testSomething() {
             } }
          </test>
+
+         <test name="RomanNumbers2Test">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class RomanNumbersTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
       </tests>
 
       <config>
