@@ -146,10 +146,21 @@ public class Controller implements Initializable {
          } else {
             System.out.println("NOP");
             String message = "";
-            Collection<CompileError> errors = compilerManager.getSourceFile().getCompilerErrors();
-            for (CompileError cmpErr : errors) {
-               System.out.println(cmpErr.getMessage());
-               message = message + cmpErr.getMessage() + "\n";
+            Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
+            Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
+            message = message+"Compile-Errors - Code:\n";
+            if(errorsCode != null) {
+               for (CompileError cmpErr : errorsCode) {
+                  System.out.println(cmpErr.getMessage());
+                  message = message + cmpErr.getMessage() + "\n";
+               }
+            }
+            message = message+"Compile-Errors - Test:\n";
+            if(errorsTest != null) {
+               for (CompileError cmpErr : errorsTest) {
+                  System.out.println(cmpErr.getMessage());
+                  message = message + cmpErr.getMessage() + "\n";
+               }
             }
             compilerMessages.setText(message);
 
