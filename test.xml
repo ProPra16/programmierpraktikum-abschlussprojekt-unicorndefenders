@@ -30,7 +30,7 @@
          <test name="RomanNumbers2Test">
             import static org.junit.Assert.*;
             import org.junit.Test;
-            public class RomanNumbersTest {
+            public class RomanNumbersTest2 {
             @Test
             public void testSomething() {
             } }
