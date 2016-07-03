@@ -1,24 +1,28 @@
 package de.hhu.propra16.unicorndefenders.tddt;
 
-import de.hhu.propra16.unicorndefenders.tddt.files.CompilerManager;
-import de.hhu.propra16.unicorndefenders.tddt.files.File;
-import de.hhu.propra16.unicorndefenders.tddt.files.Source;
-import de.hhu.propra16.unicorndefenders.tddt.files.TestCode;
+import de.hhu.propra16.unicorndefenders.tddt.config.Catalog;
+import de.hhu.propra16.unicorndefenders.tddt.config.ConfigParser;
+import de.hhu.propra16.unicorndefenders.tddt.config.Exercise;
+import de.hhu.propra16.unicorndefenders.tddt.files.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import org.xml.sax.SAXException;
 import vk.core.api.CompileError;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.event.ActionEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
@@ -32,6 +36,8 @@ public class Controller implements Initializable {
    TextArea testArea;
    @FXML
    TextArea compilerMessages;
+   @FXML
+   HBox tabManager;
    @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
@@ -50,18 +56,78 @@ public class Controller implements Initializable {
 
       cycle = RED;
 
-      taskMenuData.add(new MenuEntry("A1", "Ja"));
-      taskMenuData.add(new MenuEntry("A2", "Nein"));
+      try{
+         FilesystemFile catalogFile = new FilesystemFile("test.xml");
+         ConfigParser configParser= new ConfigParser(catalogFile);
+         configParser.parse();
+         Catalog catalog = configParser.getCatalog();
+         List<Exercise> exercises = catalog.getExercises();
+
+         System.out.println(exercises.isEmpty());
+
+         for(Exercise e : exercises){
+            if(e.isBabystepsEnabled())
+               taskMenuData.add(new MenuEntry(e.getName(), "Ja", e));
+            else
+               taskMenuData.add(new MenuEntry(e.getName(), "Nein", e));
+         }
+      }catch (FileNotFoundException e){
+         Alert alert = new Alert(Alert.AlertType.ERROR);
+         alert.setTitle("Schade");
+         alert.setContentText("Der Katalog wurde nicht gefunden :(");
+         alert.showAndWait();
+      } catch (SAXException e) {
+         e.printStackTrace();
+      } catch (ParserConfigurationException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+
       taskMenu.setItems(taskMenuData);
 
-      taskMenu.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+
+      taskMenu.setOnMousePressed(new EventHandler<MouseEvent>() {
          @Override
          public void handle(MouseEvent event) {
-         if (event.getButton() == MouseButton.PRIMARY){
-            MenuEntry selectedEntry = taskMenu.getSelectionModel().getSelectedItem();
-            System.out.println(selectedEntry.getTaskTitle());
+            if (event.getButton() == MouseButton.PRIMARY){
+               MenuEntry selectedEntry = taskMenu.getSelectionModel().getSelectedItem();
+              // Menuevent.getSource();
+               if(selectedEntry != null) {
+                  System.out.println(selectedEntry.getTaskTitle());
+
+                  Exercise selectedExcercise = selectedEntry.getExercise();
+                  List<File> codeList = selectedExcercise.getClassTemplate();
+                  List<File> testList = selectedExcercise.getTestTemplate();
+                  tabManager.getChildren().clear();
+
+                  for(int i = 0; i < codeList.size(); i++){
+                     TabButton button = new TabButton(Integer.toString(i+1), codeList.get(i), testList.get(i));
+                     button.setOnMousePressed(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                           if(event.getButton()== MouseButton.PRIMARY){
+                              TabButton clickedButton = (TabButton) event.getSource();
+                              codeArea.setText(clickedButton.getCode().getContent());
+                              testArea.setText(clickedButton.getTest().getContent());
+
+
+                           }
+                        }
+                     });
+                     tabManager.getChildren().add(button);
+                     codeArea.setText(codeList.get(0).getContent());
+                     testArea.setText(testList.get(0).getContent());
+                  }
+
+               }
             }
+            taskMenu.getSelectionModel().clearSelection();
          }
+
       });
 
 
