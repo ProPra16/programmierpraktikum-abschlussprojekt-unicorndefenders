@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
+import javafx.application.Platform;
 
 public class Controller implements Initializable {
 
@@ -47,8 +48,8 @@ public class Controller implements Initializable {
    Cycle cycle;
 
    // Fuer BabySteps
-   boolean isBabyStepsEnabled;
-   int babyStepsTimeinSeconds;
+   static boolean isBabyStepsEnabled;
+   static int babyStepsTimeinSeconds;
 
 
 
@@ -138,7 +139,7 @@ public class Controller implements Initializable {
 
       });
 
-
+   babyStepsHandling();
 
 
    }
@@ -151,6 +152,7 @@ public class Controller implements Initializable {
          compilerManager.run();
          if (compilerManager.wasCompilerSuccessfull()) {
             System.out.println("Success");
+             successfullCompiling=true;
          } else {
             System.out.println("NOP");
             String message = "";
@@ -193,6 +195,7 @@ public class Controller implements Initializable {
          testArea.setEditable(true);
          codeArea.setEditable(false);
          cycle = GREEN;
+         babyStepsHandling();
       }
       else if (cycle == GREEN){
          codeArea.setStyle("-fx-border-color: #088A08;");
@@ -200,9 +203,62 @@ public class Controller implements Initializable {
          codeArea.setEditable(true);
          testArea.setEditable(false);
          cycle = RED;
+         babyStepsHandling();
       }
    }
 
 
+    static String puffer="";
+    static boolean successfullCompiling=false;
+    @FXML
+    static Label babyStepsTimer;
+
+    public void babyStepsHandling(){
+
+
+        if(isBabyStepsEnabled&&cycle!=REFACTOR) {          // BabySteps nur, wenn eingeschaltet und nicht in der Refactoring-Phase
+            if(cycle==RED){                                 // alten Zustand des Test-Editors speichern
+                puffer=testArea.getText();
+            }
+            if(cycle==GREEN){                               // alten Zustand des Code-Editors speichern
+                puffer=codeArea.getText();
+            }
+
+            babyStepsTimer = BabyStepsConfig.init(babyStepsTimeinSeconds); // Anfangswert des Labels setzen
+            BabyStepsConfig.sec=babyStepsTimeinSeconds;           // Anzahl Sekunden setzen
+            BabyStepsConfig.count(babyStepsTimer);                         // Timer runterzählen
+
+            Thread t = new Thread(() -> {         // damit parallel Aktionen möglich sind, neuen Thread erstellen
+                while (true) {
+
+                    if(successfullCompiling){   // wenn Kompilierung erfolreich war, dann Schleife abbrechen
+                       successfullCompiling=false;
+                       break;
+                    }
+
+
+                    if (!babyStepsTimer.getText().equals("0:00")) {
+                        if(cycle == RED){
+                            Platform.runLater( () -> testArea.setText(puffer)); // Test-Editor-Inhalt zurücksetzen
+                            babyStepsHandling();                                // falls Zeit abgelaufen, wird die Zeit erneut runtergezählt
+
+                        }
+                        if(cycle == GREEN){
+                            Platform.runLater( () -> codeArea.setText(puffer));          // Code-Editor-Inhalt zurücksetzen
+                            babyStepsHandling();                                         // falls Zeit abgelaufen, wird die Zeit erneut runtergezählt
+
+                        }
+                        break;   // Schleife abbrechen, sobald die Zeit abgelaufen ist
+                    }
+                }
+
+            });
+
+            t.start();
+        }
+        else {
+            babyStepsTimer.setText("");   // wenn man in der Refactoring-Phase ist oder BabySteps ausgeschaltet ist, dann leeres Label
+        }
+    }
 
 }
