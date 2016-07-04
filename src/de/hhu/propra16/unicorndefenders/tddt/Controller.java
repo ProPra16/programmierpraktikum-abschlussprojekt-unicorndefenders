@@ -46,6 +46,10 @@ public class Controller implements Initializable {
 
    Cycle cycle;
 
+   // Fuer BabySteps
+   boolean isBabyStepsEnabled;
+   int babyStepsTimeinSeconds;
+
 
 
    // Dummy-Methoden
@@ -63,7 +67,6 @@ public class Controller implements Initializable {
          Catalog catalog = configParser.getCatalog();
          List<Exercise> exercises = catalog.getExercises();
 
-         System.out.println(exercises.isEmpty());
 
          for(Exercise e : exercises){
             if(e.isBabystepsEnabled())
@@ -99,7 +102,12 @@ public class Controller implements Initializable {
                if(selectedEntry != null) {
                   System.out.println(selectedEntry.getTaskTitle());
 
+
                   Exercise selectedExcercise = selectedEntry.getExercise();
+
+                  isBabyStepsEnabled = selectedExcercise.isBabystepsEnabled();
+                  babyStepsTimeinSeconds = selectedExcercise.getBabystepsMaxTimeInSeconds();
+
                   List<File> codeList = selectedExcercise.getClassTemplate();
                   List<File> testList = selectedExcercise.getTestTemplate();
                   tabManager.getChildren().clear();

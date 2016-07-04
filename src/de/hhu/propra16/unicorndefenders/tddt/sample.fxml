@@ -13,6 +13,7 @@
 <?import de.hhu.propra16.unicorndefenders.tddt.MenuEntry?>
 
 
+<?import javafx.scene.control.Label?>
 <BorderPane fx:controller="de.hhu.propra16.unicorndefenders.tddt.Controller"
             styleClass="root"
             xmlns:fx="http://javafx.com/fxml"
@@ -21,6 +22,7 @@
 
     <top>
 
+       <HBox>
             <MenuBar id="menu">
                 <Menu text="MyProgramm">
                     <MenuItem text="open" onAction="#loadCatalog"></MenuItem>
@@ -30,8 +32,10 @@
                 <Menu text="Options"></Menu>
                 <Menu text="Refactor"></Menu>
                 <Menu text="next" onAction="#next"></Menu>
-            </MenuBar>
 
+            </MenuBar>
+          <Label fx:id="babyStepsTimer" text="TIME"></Label>
+      </HBox>
     </top>
 
     <left>
