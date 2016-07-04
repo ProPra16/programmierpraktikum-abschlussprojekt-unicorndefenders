@@ -1,3 +1,5 @@
+package de.hhu.propra16.unicorndefenders.tddt;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
