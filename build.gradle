@@ -24,6 +24,12 @@ sourceSets {
          srcDir 'src/'
       }
    }
+
+   test {
+      java {
+         srcDir 'src/de/hhu/propra16/unicorndefenders/tddt/tests'
+      }
+   }
 }
 
 mainClassName = "de.hhu.propra16.unicorndefenders.tddt.Main"
