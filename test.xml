@@ -45,38 +45,6 @@
    </exercise>
 
 
-
-   <exercise name="Bla">
-      <description> Ein kleiner Polynomrechner </description>
-
-      <classes>
-         <class name="MyDet">
-            public class MyDet {
-
-
-            }
-         </class>
-      </classes>
-
-      <tests>
-         <test name="MyDetTest">
-            import static org.junit.Assert.*;
-            import org.junit.Test;
-            public class MyDetTest {
-            @Test
-            public void testSomething() {
-
-            } }
-         </test>
-      </tests>
-
-      <config>
-         <babysteps enable="TrUe" time="122" />
-         <timetracking enable="True" />
-      </config>
-
-   </exercise>
-
    <exercise name="MyDet">
       <description> Ein kleiner Polynomrechner </description>
 

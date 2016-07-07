@@ -2,7 +2,7 @@
 -fx-overflow-x: scroll;
 -fx-overflow-y: scroll;
 -fx-border-width: 2px;
--fx-border-color: #088A08;
+-fx-border-color: #A4A4A4;
 }
 
 #codeArea .content{
@@ -22,4 +22,9 @@
 
 #menu{
 -fx-background-color: #A4A4A4;
+}
+
+#compilerMessages{
+-fx-overflow-x: scroll;
+-fx-overflow-y: scroll;
 }

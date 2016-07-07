@@ -46,7 +46,7 @@ public class TestCode extends Source {
       if (cycle == Cycle.RED) {
          return testResult.getNumberOfFailedTests() == 1;
       }
-      else if (cycle == Cycle.GREEN) {
+      else if (cycle == Cycle.GREEN || cycle == Cycle.REFACTOR) {
          return testResult.getNumberOfFailedTests() == 0;
       }
 
