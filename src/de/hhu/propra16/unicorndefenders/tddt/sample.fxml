@@ -25,7 +25,7 @@
        <HBox>
             <MenuBar id="menu">
                 <Menu text="MyProgramm">
-                    <MenuItem text="open" onAction="#loadCatalog"></MenuItem>
+                    <MenuItem text="open"></MenuItem>
                     <MenuItem text="switch" onAction="#next"></MenuItem>
                     <MenuItem text="Compile" onAction="#compileCode"></MenuItem>
                 </Menu>
@@ -35,6 +35,9 @@
 
             </MenuBar>
           <Label fx:id="babyStepsTimer" text="TIME"></Label>
+          <Pane fx:id="showRefactor">
+
+          </Pane>
       </HBox>
     </top>
 
@@ -63,17 +66,17 @@
         <VBox>
             <HBox fx:id="tabManager">
             </HBox>
-            <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="true"  maxWidth="525" minWidth="525" minHeight="460"></TextArea>
+            <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="false"  maxWidth="525" minWidth="525" minHeight="440"></TextArea>
         </VBox>
     </center>
 
     <right>
-        <TextArea id="testArea" fx:id="testArea" text="NOPNOPNOP" editable="false" maxWidth="473" minWidth="473" minHeight="460"></TextArea>
+        <TextArea id="testArea" fx:id="testArea" text="NOPNOPNOP" editable="true" maxWidth="473" minWidth="473" minHeight="440"></TextArea>
 
     </right>
 
     <bottom >
-        <TextArea fx:id="compilerMessages" text="UNTEN" editable="false"></TextArea>
+        <TextArea id="compilerMessages" fx:id="compilerMessages" minHeight="103" maxHeight="103" maxWidth="1250" editable="false"></TextArea>
     </bottom>
 
 
