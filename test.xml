@@ -9,12 +9,6 @@
 
             }
          </class>
-
-         <class name="RomanNumber2">
-            public class RomanNumberConverter2 {
-
-            }
-         </class>
       </classes>
 
       <tests>
@@ -22,15 +16,6 @@
             import static org.junit.Assert.*;
             import org.junit.Test;
             public class RomanNumbersTest {
-            @Test
-            public void testSomething() {
-            } }
-         </test>
-
-         <test name="RomanNumbers2Test">
-            import static org.junit.Assert.*;
-            import org.junit.Test;
-            public class RomanNumbersTest2 {
             @Test
             public void testSomething() {
             } }
@@ -150,6 +135,482 @@
 
       <config>
          <babysteps enable="TrUe" time="122" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+
+   <exercise name="EinhornGenerator">
+      <description> Konvertiert arabische in römische Zahlen </description>
+      <classes>
+         <class name="UnicornGenerator">
+            public class UnicornGenerator {
+
+            }
+         </class>
+      </classes>
+
+      <tests>
+         <test name="UnicornGeneratorTest">
+            import static org.junit.Assert.*;
+            import org.junit.Test;
+            public class UnicornGeneratorTest {
+            @Test
+            public void testSomething() {
+            } }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="false" />
          <timetracking enable="True" />
       </config>
 
