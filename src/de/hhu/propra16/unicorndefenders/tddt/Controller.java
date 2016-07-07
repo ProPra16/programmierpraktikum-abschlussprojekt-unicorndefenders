@@ -31,6 +31,9 @@ import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.REFACTOR;
 
+import javafx.application.Platform;
+
+
 public class Controller implements Initializable {
 
    @FXML
@@ -47,13 +50,25 @@ public class Controller implements Initializable {
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
+   static String puffer="";                    // zum Zwischenspeichern des Inhalts von testArea bzw. codeArea
+
+   // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
+   static boolean successfullCompiling=false;
+
+   // falls der Timer 0:00 erreicht hat, auf true gesetzt; dann Abbbruch des Threads in BabyStepsAbbruch()
+   static boolean finished=false;
+
+   static boolean refactoring=false;  // falls zwischenzeitlich in REFACTOR gewechselt, Abbruch der anderen Threads (alle außer dem Main-Thread)
+
+   @FXML
+   Label babyStepsTimer;              // Timer-Label in der FXML-Datei
 
 
-   Cycle cycle;
+   static Cycle cycle;
 
    // Fuer BabySteps
-   boolean isBabyStepsEnabled;
-   int babyStepsTimeinSeconds;
+   static boolean isBabyStepsEnabled;
+   static int babyStepsTimeinSeconds;
 
    CompilerManager compilerManager;
 
@@ -113,6 +128,7 @@ public class Controller implements Initializable {
                // Bestimme den ausgewaehlten Eintrag
                MenuEntry selectedEntry = taskMenu.getSelectionModel().getSelectedItem();
 
+
                //Es kann sein, dass User nicht auf existenten Eintrag klickt
                if(selectedEntry != null) {
 
@@ -122,6 +138,10 @@ public class Controller implements Initializable {
 
                   isBabyStepsEnabled = selectedExcercise.isBabystepsEnabled();
                   babyStepsTimeinSeconds = selectedExcercise.getBabystepsMaxTimeInSeconds();
+
+
+                  babyStepsHandling();       // ggf. BabySteps
+                  babyStepsAbbruch();        // ggf. Abbruch von BabySteps
 
 
                   List<File> codeList = selectedExcercise.getClassTemplate();
@@ -182,6 +202,10 @@ public class Controller implements Initializable {
          // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
          if (compilerManager.wasCompilerSuccessfull()) {
             System.out.println("Success");
+
+            // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
+            successfullCompiling=true;
+
          } else {
             System.out.println("NOP");
             String message = compilerMessages.getText();
@@ -217,6 +241,7 @@ public class Controller implements Initializable {
     *
     */
    public void next(){
+
       compileCode();
 
       // Je nach laufender Phase muss anders reagiert werden.
@@ -269,6 +294,10 @@ public class Controller implements Initializable {
                testArea.setEditable(true);
                codeArea.setEditable(false);
                cycle = RED;
+               if(isBabyStepsEnabled){    // BabySteps durchführen und dann ggf. abbrechen
+                  babyStepsHandling();
+                  babyStepsAbbruch();
+               }
             }
          }
          else{
@@ -283,28 +312,131 @@ public class Controller implements Initializable {
             }
          }
       }
-      else if (cycle == RED){
-         if(compilerManager.wasTestSuccessfull()) {
+      else if (cycle == RED) {
+         if (compilerManager.wasTestSuccessfull()) {
             codeArea.setStyle("-fx-border-color: #088A08;");
             testArea.setStyle("-fx-border-color: #A4A4A4;");
             codeArea.setEditable(true);
             testArea.setEditable(false);
             cycle = GREEN;
-         }
-         else{
+            if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+               babyStepsHandling();
+               babyStepsAbbruch();
+            }
+         } else {
             if (compilerManager.wasCompilerSuccessfull()) {
                String msg = compilerMessages.getText();
                msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
                compilerMessages.setText(msg);
-            }else{
+            } else {
                String msg = compilerMessages.getText();
                msg = msg + "Kompilieren fehlgeschlagen\n ";
                compilerMessages.setText(msg);
             }
          }
       }
+
    }
 
+
+
+
+   public void babyStepsHandling() {  // führt BabySteps aus
+
+      // etwaigen vorigen Thread aus der count-Methode in BabyStepsConfig.java stoppen, damit dieser nicht weiterläuft
+      // und nicht doppelt runtergezählt wird
+      BabyStepsConfig.stopThread = true;
+
+      if (isBabyStepsEnabled && cycle != REFACTOR) {   // BabySteps nur, wenn eingeschaltet und nicht in der Refactoring-Phase
+
+         // damit stopThread im Thread der count()-Methode in BabyStepsConfig.java wirken kann, eine Sekunde warten,
+         // da dort auch stets eine Sekunde gewartet wird; stopthread wird nämlich weiter unten wiederauf false gesetzt,
+         // damit ein neuer Thread in count() starten kann
+         try{
+            Thread.sleep(1000);
+         }
+         catch (InterruptedException e) {
+            e.printStackTrace();
+         }
+
+         if (cycle == RED) {                                 // alten Inhalt des Test-Editors speichern
+            puffer = testArea.getText();
+         }
+         if (cycle == GREEN) {                               // alten Inhalt des Code-Editors speichern
+            puffer = codeArea.getText();
+         }
+
+         BabyStepsConfig.init(babyStepsTimeinSeconds, babyStepsTimer); // Anfangswert des Labels setzen
+
+         // weiter oben auf true gesetzt, damit ein eventuell noch laufender alter Thread abbricht
+         // damit neuer Thread  in BabyStepsConfig.count() möglich, jetzt wieder auf false gesetzt
+         BabyStepsConfig.stopThread = false;
+         BabyStepsConfig.sec = babyStepsTimeinSeconds;           // Anzahl Sekunden setzen
+         BabyStepsConfig.count(babyStepsTimer);                  // Timer runterzählen
+
+
+
+      }
+      else{                                                            // wenn babySteps=nein oder Refactoring-Phase
+         BabyStepsConfig.init(babyStepsTimeinSeconds, babyStepsTimer); // damit das Label an StringProperty sp gebunden wird
+         BabyStepsConfig.sp.setValue("");                              // sp auf leer gesetzt
+      }
+
+   }
+
+   // Methode setzt den Zustand der TextAreas zurück, falls die Zeit abgelaufen ist d.h. falls der Timer aus
+   // BabyStepsConfig.count() 0:00 erreicht
+   public void babyStepsAbbruch(){
+
+      Thread t = new Thread(() -> {             // weiterer Thread, damit parallel Aktionen möglich sind
+         while (true) {
+            if(babyStepsTimer.getText().equals("0:01")) {
+               try {
+                  // dann 0:00 im Thread von BabyStepsConfig.count() erreicht
+                  // in der if-Bedingung wird bewusst nicht 0:00 verwendet, da der andere Thread früher startet
+                  // und die Threads deshalb zeitlich versetzt laufen
+                  Thread.sleep(1000);
+               }
+               catch(InterruptedException e){
+                  e.printStackTrace();
+               }
+               if (cycle == RED) {
+
+                  testArea.setText(puffer);        // Test-Editor-Inhalt zurücksetzen, da Zeit abgelaufen
+
+               }
+               if (cycle == GREEN) {
+
+                  codeArea.setText(puffer);        // Code-Editor-Inhalt zurücksetzen, da Zeit abgelaufen
+
+               }
+               break;                              // wenn die Zeit abgelaufen ist, auch diese Schleife abbrechen
+            }
+            if (cycle==REFACTOR){      // wenn zwischenzeitlich REFACTOR gewählt wurde, alle Nicht-Main-Threads abbrechen
+               refactoring=true;       // führt zum Abbruch des Threads in BabyStepsConfig.count()
+               break;
+            }
+
+            // damit Thread nicht umsonst weiter läuft, Abbruch, sobald BabyStepsConfig.count() auch fertig
+            // zB. im Falle einer erfolgreichen Kompilierung
+            if(finished){
+               finished=false;
+               break;
+            }
+
+         }
+
+         // wenn die Zeit abgelaufen ist, wird über next() in die Phase zuvor gewechselt
+         // So kann man es machen, wechselt aber nur einmal:
+         /*
+         if(babyStepsTimer.getText().equals("0:00")){
+            Platform.runLater( () ->next());
+         }*/
+      });
+
+      t.start();  // Starte den Thread t
+
+   }
 
 
 }
