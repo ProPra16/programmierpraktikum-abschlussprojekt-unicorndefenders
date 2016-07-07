@@ -1,7 +1,7 @@
 package de.hhu.propra16.unicorndefenders.tddt.config;
 
 import de.hhu.propra16.unicorndefenders.tddt.files.File;
-import de.hhu.propra16.unicorndefenders.tddt.files.FilesystemFile;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,26 +17,22 @@ import java.util.List;
 /**
  * Parser fuer die Konfigurationsdatei.
  *
+ * Folgende Fehler werden abgefangen (ConfigParserException):
+ *    - Ungleiche Anzahl von Klassen und Tests innerhalb einer Aufgabe.
+ *    - Fehlender Name einer Aufgabe.
+ *    - Falsche Wurzel
+ *    - Fehlende 'enable' Angabe bei den Erweiterungen
+ *    - Babystepszeit, die keine Zahl ist. (Wird auch als ConfigParserException geworfen)
+ *
  * @author Pascal
  */
 public class ConfigParser {
 
    /**
-    * Eingabedatei.
-    * Diese ist noch im Rohzustand, d.h. nur der Text.
-    */
-   private ReallyExistingFile file;
-
-   /**
-    * Aufgabenkatalog.
-    * Diese Instanz enthaellt alle geparsten Aufgaben der Konfiguration.
+    * Konfigurationsdatei.
+    * Diese Instanz enthaellt alle geparsten Information aus der Konfiguration.
     */
    private Catalog catalog;
-
-   /**
-    * Aufgabe, die derzeit aus den Daten der Konfiguration zusammengebaut wird.
-    */
-   private Exercise currentExercise;
 
    /**
     * Initialisiert den Parser mit der Konfigurationsdatei.
@@ -50,9 +46,7 @@ public class ConfigParser {
    public ConfigParser(ReallyExistingFile file)
            throws ParserConfigurationException, SAXException, IOException
    {
-      this.file = file;
       this.catalog = new Catalog();
-      this.currentExercise = new Exercise();
 
       factory = DocumentBuilderFactory.newInstance();
       builder = factory.newDocumentBuilder();
@@ -61,113 +55,171 @@ public class ConfigParser {
 
    /**
     * Startet den Parser.
-    * @throws Exception
+    *
+    * @throws ConfigParserException
     */
-   public void parse() throws Exception {
+   public void parse() throws ConfigParserException {
       File source          = null;
       File test            = null;
       List<File> classes   = new ArrayList<>();
 
-      NodeList list = document.getElementsByTagName("exercise");
+      // Wurzel muss 'exercises' sein
+      Node documentParentNode = document.getFirstChild();
+      if (! documentParentNode.getNodeName().equals(NODE_EXERCISES)) {
+         throw new ConfigParserException(ERR_MSG_WRONG_ROOT, null);
+      }
 
-      for (int exerciseIndex = 0; exerciseIndex < list.getLength(); exerciseIndex++) {
-         // Aufgaben muessen im Tag 'exercises' > 'exercise' liegen.
-         if (!inCorrectTag(list.item(exerciseIndex))) {
-            continue;
+      // Jede Aufgabe ist ein direkter Nachfolger der Wurzel
+      NodeList rootChildren = documentParentNode.getChildNodes();
+      for (int i=0; i<rootChildren.getLength(); i++) {
+         Node child = rootChildren.item(i);
+
+         if (child.getNodeType() == Node.ELEMENT_NODE && rootChildren.item(i).getNodeName().equals(NODE_EXERCISE)) {
+            Exercise exercise = parseExercise(child);
+
+            // Jede Klasse muss genau einen Test haben
+            if (exercise.getClassTemplate().size() != exercise.getTestTemplate().size()) {
+               throw new ConfigParserException(ERR_MSG_DIFFERENT_NBR_OF_TESTS_AND_CLASSES, exercise);
+            }
+
+            catalog.addExercise(exercise);
          }
 
-         currentExercise = new Exercise();
-
-         Node curr = list.item(exerciseIndex).getAttributes().getNamedItem(TAG_NAME);
-         if (curr == null)
-            throw new Exception(ERR_MSG_MISSING_NAME_FOR_EXERCISE);
-
-         currentExercise.setName(curr.getNodeValue());
-
-         NodeList list2 = list.item(exerciseIndex).getChildNodes();
-
-         for (int k = 0; k < list2.getLength(); k++) {
-            Node n = list2.item(k);
-
-            if (n.getNodeName().equals(TAG_DESCRIPTION)) {
-               currentExercise.setDescription(n.getTextContent().trim());
-
-            } else if (n.getNodeName().equals(TAG_CLASS_ROOT)) {
-               NodeList classList = n.getChildNodes();
-               for (int l = 0; l < classList.getLength(); l++) {
-                  Node currentConfig = classList.item(l);
-
-                  if (currentConfig.getNodeName().equals(TAG_CLASS_CHILD)) {
-                     // @TODO Hier muss der Name der Klasse ausgelesen werden.
-                     source = new File(
-                             currentConfig.getAttributes().getNamedItem("name").getNodeValue(),
-                             currentConfig.getTextContent().trim());
-
-                     currentExercise.addClass(source);
-                  }
-               }
-
-            } else if (n.getNodeName().equals("tests")) {
-               NodeList classList = n.getChildNodes();
-               for (int l = 0; l < classList.getLength(); l++) {
-                  Node currentConfig = classList.item(l);
-
-                  if (currentConfig.getNodeName().equals("test")) {
-                     // @TODO Hier muss der Name der Klasse ausgelesen werden.
-                     test = new File(
-                             currentConfig.getAttributes().getNamedItem("name").getNodeValue(),
-                             currentConfig.getTextContent().trim());
-
-                     currentExercise.addTest(test);
-                  }
-               }
-            }
-            else if (n.getNodeName().equals(TAG_CONFIG)) {
-               NodeList configList = n.getChildNodes();
-               parseExcersiceConfig(configList);
-            }
-         }
-
-         catalog.addExercise(currentExercise);
       }
    }
 
    /**
-    * Parst den config-Block einer Aufgabe
+    * Parst einen Knoten, d.h. eine Aufgabe
     *
-    * @param configList
-    * @throws Exception
+    * @param exerciseNode
     */
-   private void parseExcersiceConfig(NodeList configList) throws Exception {
-      for (int l = 0; l < configList.getLength(); l++) {
-         Node currentConfig = configList.item(l);
+   private Exercise parseExercise(Node exerciseNode) throws ConfigParserException {
+      Exercise exercise = new Exercise();
+      NodeList children = exerciseNode.getChildNodes();
 
-         if (currentConfig.getNodeName().equals(SUBTAG_BABYSTEPS)) {
+      // Jede Aufgabe muss einen Namen haben
+      Node nameAttribute = exerciseNode.getAttributes().getNamedItem(ATTRIBUTE_NAME);
+      if (nameAttribute == null)
+         throw new ConfigParserException(ERR_MSG_MISSING_NAME, null);
+
+      exercise.setName(nameAttribute.getNodeValue());
+
+
+      for (int l=0; l<children.getLength(); l++) {
+         String nodeName = children.item(l).getNodeName();
+
+         // Beschreibung der Aufgabe
+         if (nodeName.equals(NODE_DESCRIPTION)) {
+            exercise.setDescription(children.item(l).getTextContent().trim());
+         }
+
+         // Liste aller Klassen, die zur Verfuegung gestellt werden
+         if (nodeName.equals(NODE_CLASSES)) {
+            exercise = parseCodeNode(children.item(l), exercise, CodeType.SOURCE);
+         }
+
+         // Liste aller Test, die zur Verfuegung gestellt werden
+         if (nodeName.equals(NODE_TESTS)) {
+            exercise = parseCodeNode(children.item(l), exercise, CodeType.TEST);
+         }
+
+         // Konfigurationen
+         if (nodeName.equals(NODE_CONFIG)) {
+            exercise = parseConfig(children.item(l), exercise);
+         }
+      }
+
+      return exercise;
+   }
+
+   /**
+    * Parst die Konfigurationen innerhalb des 'config'-Knoten.
+    * Hier werden alle Einstellungen der Erweiterungen festgelegt.
+    *
+    * @param configNode
+    * @param exercise
+    * @return
+    * @throws ConfigParserException
+    */
+   private Exercise parseConfig(Node configNode, Exercise exercise) throws ConfigParserException {
+      NodeList children = configNode.getChildNodes();
+
+      for (int l = 0; l < children.getLength(); l++) {
+         Node currentConfig = children.item(l);
+
+         if (currentConfig.getNodeName().equals(NODE_BABYSTEPS)) {
 
             // Pruefen, ob alle verpflichtenden Einstellungen vorhanden sind.
-            Node valueNode = currentConfig.getAttributes().getNamedItem("enable");
-            Node timeNode  = currentConfig.getAttributes().getNamedItem("time");
+            Node valueNode = currentConfig.getAttributes().getNamedItem(ATTRIBUTE_ENABLE);
+            Node timeNode  = currentConfig.getAttributes().getNamedItem(ATTRIBUTE_TIME);
 
-            if (valueNode == null)
-               throw new Exception(ERR_MSG_MISSING_ENABLE_TAG);
+            if (valueNode == null) {
+               throw new ConfigParserException(ERR_MSG_MISSING_ENABLE, exercise);
+            }
 
             if (valueNode.getNodeValue().toLowerCase().equals("true")) {
-               currentExercise.enableBabysteps();
+               exercise.enableBabysteps();
 
                // Eingeschaltetes Babysteps muss eine Zeit bekommen
                if (timeNode == null)
-                  throw new Exception(ERR_MSG_MISSING_TIME_FOR_BABYSTEPS);
+                  throw new ConfigParserException(ERR_MSG_MISSING_TIME, exercise);
 
-               currentExercise.setBabystepsMaxTimeInSeconds(Integer.parseInt(timeNode.getNodeValue()));
+               // Auch NumberFormatException soll als ConfigParserException geworfen werden
+               try {
+                  exercise.setBabystepsMaxTimeInSeconds(Integer.parseInt(timeNode.getNodeValue()));
+               } catch (NumberFormatException ex) {
+                  throw new ConfigParserException("Ungültige Zeit für Babysteps. (" + ex.getMessage() + ")", exercise);
+               }
+
             }
-
          }
-         else if (currentConfig.getNodeName().equals(SUBTAG_TIMETTRACKING)) {
-            if (currentConfig.getAttributes().getNamedItem("enable").getNodeValue().toLowerCase().equals("true")) {
-               currentExercise.enableTracking();
+         else if (currentConfig.getNodeName().equals(NODE_TIMETRACKING)) {
+            if (currentConfig.getAttributes().getNamedItem(ATTRIBUTE_ENABLE).getNodeValue().toLowerCase().equals("true")) {
+               exercise.enableTracking();
             }
          }
       }
+
+      return exercise;
+   }
+
+   /**
+    * Parst Code-Knoten.
+    * Dies sind die Knoten fuer Klassen und Tests.
+    *
+    * Einer der Uebergabeparameter ist die aktuell noch nicht fertig gelesene Aufgabe.
+    * Diese wird in dieser Methode veraendert. Das modifizierte Objekt wird am Ende
+    * wieder zurueckgegeben.
+    *
+    * @param node
+    * @param exercise Die noch unfertig gelesene Aufgabe
+    * @param codeType Type des Knotens (Code oder Tests)
+    *
+    * @return Die modifizierte Aufgabe
+    */
+   private Exercise parseCodeNode(Node node, Exercise exercise, CodeType codeType) {
+      File file = null;
+      NodeList classes = node.getChildNodes();
+
+      for (int l = 0; l < classes.getLength(); l++) {
+         Node currentConfig = classes.item(l);
+
+         String name = (currentConfig.getAttributes() == null)
+                 ? "Unbenannte Klasse"
+                 : currentConfig.getAttributes().getNamedItem(ATTRIBUTE_NAME).getNodeValue();
+
+
+         if (codeType == CodeType.SOURCE && currentConfig.getNodeName().equals(NODE_CLASS)) {
+            file = new File(name, currentConfig.getTextContent().trim());
+            exercise.addClass(file);
+         }
+         else if (codeType == CodeType.TEST && currentConfig.getNodeName().equals(NODE_TEST)) {
+            file = new File(name, currentConfig.getTextContent().trim());
+            exercise.addTest(file);
+         }
+      }
+
+      return exercise;
    }
 
    /**
@@ -179,23 +231,6 @@ public class ConfigParser {
    }
 
    /**
-    * Testet, ob jeder 'exercise'-Tag auch im Obertag 'exercises' liegt.
-    * Dieser muss dann der Root-Tag sein.
-    *
-    * @return
-    */
-   private boolean inCorrectTag(Node toCheck) {
-      /*Node n = toCheck.getParentNode();
-      while (n != null) {
-         System.out.println(n.getNodeName());
-         n = n.getParentNode();
-      }
-      */
-      return toCheck.getParentNode().getNodeName().equals("exercises");
-   }
-
-
-   /**
     * Objekte, die von der XML-Bibliothek benoetigt werden.
     */
    private DocumentBuilderFactory factory;
@@ -203,21 +238,35 @@ public class ConfigParser {
    private Document document;
 
    /**
-    * Vorgeschriebene Tagnamen
+    * Internes Enum zur Verwendung als Parameter in parseCodeNode.
+    *
+    * @author Pascal
     */
-   private final String TAG_DESCRIPTION       = "description";
-   private final String TAG_NAME              = "name";
-   private final String TAG_CLASS_ROOT        = "classes";
-   private final String TAG_CLASS_CHILD       = "class";
-   private final String TAG_CONFIG            = "config";
+   private enum CodeType {
+      SOURCE,
+      TEST
+   };
 
-   private final String SUBTAG_BABYSTEPS      = "babysteps";
-   private final String SUBTAG_TIMETTRACKING  = "timetracking";
 
-   /**
-    * Fehlermeldungen
-    */
-   private final String ERR_MSG_MISSING_TIME_FOR_BABYSTEPS = "Keine Zeitangabe für Babysteps angegeben.";
-   private final String ERR_MSG_MISSING_ENABLE_TAG         = "Fehlende enable Angabe gefunden.";
-   private final String ERR_MSG_MISSING_NAME_FOR_EXERCISE  = "Fehlender Name für eine Aufgabe.";
+   private final String ERR_MSG_WRONG_ROOT = "Datei besitzt ein falsches Wurzelelement. (Erwartet: exercises)";
+   private final String ERR_MSG_DIFFERENT_NBR_OF_TESTS_AND_CLASSES = "Unterschiedliche Anzahl von Tests und Klassen.";
+   private final String ERR_MSG_MISSING_NAME = "Kein Name fuer Aufgabe vergeben.";
+   private final String ERR_MSG_MISSING_ENABLE = "Fehlende enable Angabe.";
+   private final String ERR_MSG_MISSING_TIME = "Keine Zeit für Babysteps angegeben.";
+
+   private final String ATTRIBUTE_NAME = "name";
+   private final String ATTRIBUTE_TIME = "time";
+   private final String ATTRIBUTE_ENABLE = "enable";
+
+   private final String NODE_EXERCISES = "exercises";
+   private final String NODE_EXERCISE = "exercise";
+   private final String NODE_DESCRIPTION = "description";
+   private final String NODE_CONFIG = "config";
+   private final String NODE_BABYSTEPS = "babysteps";
+   private final String NODE_TIMETRACKING = "timetracking";
+   private final String NODE_CLASSES = "classes";
+   private final String NODE_CLASS = "class";
+   private final String NODE_TESTS = "tests";
+   private final String NODE_TEST = "test";
+
 }
