@@ -43,9 +43,9 @@ public class Controller implements Initializable {
    @FXML
    TextArea compilerMessages;
    @FXML
-   Pane showRefactor;
+   Button backToRed;
    @FXML
-   Pane showBackToRed;
+   Button refactor;
    @FXML
    Label status;
    @FXML
@@ -251,6 +251,7 @@ public class Controller implements Initializable {
                }
 
                if (goToRefactor) {
+                  backToRed.setDisable(true);
                   cycle = REFACTOR;
                   status.setText("REFACTOR");
                   testArea.setEditable(true);
@@ -259,24 +260,7 @@ public class Controller implements Initializable {
 
                   // Mittels neuem Button in der Menuleiste oben kommt man wieder zurueck zur Phase RED
                   Button endRefactor = new Button("Refactor beenden");
-                  showRefactor.getChildren().add(endRefactor);
-
-                  endRefactor.setOnMousePressed(new EventHandler<MouseEvent>() {
-                     @Override
-                     public void handle(MouseEvent event) {
-                        if (event.getButton() == MouseButton.PRIMARY) {
-
-                           compileCode();
-
-                           // Man darf nur wechseln, wenn alle Teste erfolgreich sind
-                           if (compilerManager.wasTestSuccessfull()) {
-
-                              initRedMode();
-                              showRefactor.getChildren().clear();
-                           }
-                        }
-                     }
-                  });
+                  refactor.setDisable(false);
 
                } else {
                   initRedMode();
@@ -314,11 +298,26 @@ public class Controller implements Initializable {
    }
 
 
+   public void endRefactor(){
+
+         compileCode();
+
+         // Man darf nur wechseln, wenn alle Teste erfolgreich sind
+         if (compilerManager.wasTestSuccessfull()) {
+
+            initRedMode();
+            refactor.setDisable(true);
+         }
+
+
+   }
+
    public void initRedMode() {
       testArea.setStyle("-fx-border-color: #DF0101;");
       codeArea.setStyle("-fx-border-color: #A4A4A4;");
       testArea.setEditable(true);
       codeArea.setEditable(false);
+      backToRed.setDisable(true);
       cycle = RED;
       status.setText("RED");
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
@@ -335,7 +334,7 @@ public class Controller implements Initializable {
       testArea.setStyle("-fx-border-color: #A4A4A4;");
       codeArea.setEditable(true);
       testArea.setEditable(false);
-      createBackToRedButton();
+      backToRed.setDisable(false);
       cycle = GREEN;
       status.setText("GREEN");
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
@@ -344,32 +343,26 @@ public class Controller implements Initializable {
       }
    }
 
-   public void createBackToRedButton(){
-      Button backToRed = new Button("BACK TO RED");
-      showBackToRed.getChildren().add(backToRed);
-      backToRed.setOnMousePressed(new EventHandler<MouseEvent>() {
-         @Override
-         public void handle(MouseEvent event) {
-            if(event.getButton() == MouseButton.PRIMARY){
-               testArea.setStyle("-fx-border-color: #DF0101;");
-               codeArea.setStyle("-fx-border-color: #A4A4A4;");
-               testArea.setEditable(true);
-               codeArea.setEditable(false);
-               showBackToRed.getChildren().clear();
-               codeArea.setText(codeBuffer.getContent());
-               cycle = RED;
-               status.setText("RED");
-               if(isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
-                  babyStepsHandling();
-                  babyStepsAbbruch();
-               }
 
 
-            }
+   public void backToRed() {
+
+         testArea.setStyle("-fx-border-color: #DF0101;");
+         codeArea.setStyle("-fx-border-color: #A4A4A4;");
+         testArea.setEditable(true);
+         codeArea.setEditable(false);
+         codeArea.setText(codeBuffer.getContent());
+         cycle = RED;
+         status.setText("RED");
+         if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+            babyStepsHandling();
+            babyStepsAbbruch();
          }
-      });
-   }
+      backToRed.setDisable(true);
 
+
+
+   }
 
 
    public void babyStepsHandling() {  // führt BabySteps aus

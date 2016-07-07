@@ -42,10 +42,9 @@
           <Button text="NEXT" onAction="#next">
              <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
           </Button>
-          <Pane fx:id="showBackToRed">
-          </Pane>
-          <Pane fx:id="showRefactor">
-          </Pane>
+          <Button fx:id="backToRed" text="BACK TO RED" disable="true" onMouseClicked="#backToRed"></Button>
+          <Button fx:id="refactor" text="REFACTOR" disable="true" onMouseClicked="#endRefactor"></Button>
+
 
 
           <Label text="BabySteps-Timer:">
