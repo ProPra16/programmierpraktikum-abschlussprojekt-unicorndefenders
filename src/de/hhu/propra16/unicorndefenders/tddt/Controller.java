@@ -445,6 +445,7 @@ public class Controller implements Initializable {
             }
             if (cycle==REFACTOR){      // wenn zwischenzeitlich REFACTOR gewählt wurde, alle Nicht-Main-Threads abbrechen
                refactoring=true;       // führt zum Abbruch des Threads in BabyStepsConfig.count()
+                // ggf. BabyStepsConfig.sp.setValue("")
                break;
             }
 
