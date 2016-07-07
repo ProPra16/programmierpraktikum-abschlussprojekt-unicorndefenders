@@ -46,24 +46,26 @@
 
 
 
-   <exercise name="Polynome">
+   <exercise name="Bla">
       <description> Ein kleiner Polynomrechner </description>
 
       <classes>
-         <class name="RomanNumber">
-            public class PolynomialCalculator {
+         <class name="MyDet">
+            public class MyDet {
+
 
             }
          </class>
       </classes>
 
       <tests>
-         <test name="PolynomialCalculatorTest">
+         <test name="MyDetTest">
             import static org.junit.Assert.*;
             import org.junit.Test;
-            public class PolynomialCalculatorTest {
+            public class MyDetTest {
             @Test
             public void testSomething() {
+
             } }
          </test>
       </tests>
@@ -74,6 +76,115 @@
       </config>
 
    </exercise>
-</exercises>
 
+   <exercise name="MyDet">
+      <description> Ein kleiner Polynomrechner </description>
+
+      <classes>
+         <class name="MyDet">
+            public class MyDet {
+
+            public static double determinant(double[] matrix)
+            throws IllegalArgumentException {
+            // Wenn matrix == null können wir keine Laenge bestimmen
+            if (matrix == null) {
+            throw new IllegalArgumentException(
+            "Leere Matrix nicht erlaubt");
+            }
+
+            int n = matrix.length;
+            double det = 0;
+
+            // Wenn n = 1,2,3 muss die Arraylänge n^2 entsprechen
+            if (! (n == 1 || n == 4 || n == 9))
+            throw new IllegalArgumentException(
+            "Nur kxk-Matrizen mit k = 1, 2, 3 erlaubt.");
+            else {
+
+            switch (n) {
+
+            case 1 : det = matrix[0] + 1;
+            break;
+            // Im Fall 2x2 gibt die Formel ad - bc die Determinante
+            case 4 : det = matrix[0]*matrix[3] - matrix[1]*matrix[2];
+            break;
+
+            // Anwendung der Sarrus-Formel
+            case 9 : det = matrix[0]*matrix[4]*matrix[8]
+            + matrix[1]*matrix[5]*matrix[6]
+            + matrix[2]*matrix[3]*matrix[7]
+            - matrix[2]*matrix[4]*matrix[6]
+            - matrix[5]*matrix[7]*matrix[0]
+            - matrix[8]*matrix[1]*matrix[3];
+            break;
+            }
+            }
+            return det;
+            }
+
+            }
+
+         </class>
+      </classes>
+
+      <tests>
+         <test name="MyDetTest">
+            import static org.junit.Assert.*;
+            import org.junit.*;
+
+
+            public class MyDetTest {
+
+            private static final double EPS = 0.000000000000001;
+
+            // Testet die Determinantenberechnung einer 1x1 Matrix
+            @Test
+            public void detEinsKreuzEins() {
+            double[] input= {1};
+            double expected = 1;
+
+            assertEquals(MyDet.determinant(input), expected, EPS);
+            }
+
+            // Testet die Determinantenberechnung einer 2x2 Matrix
+            @Test
+            public void detZweiKreuzZwei() {
+            double[] input= {1,1,2,1};
+            double expected = -1;
+
+            assertEquals(MyDet.determinant(input), expected, EPS);
+            }
+
+            // Testet die Determinantenberechnung einer 3x3 Matrix
+            @Test
+            public void detDreiKreuzDrei() {
+            double[] input= {6,0,0,0,6,0,0,0,6};
+            double expected = 216;
+
+            assertEquals(MyDet.determinant(input), expected, EPS);
+            }
+
+            // Testet, ob null als Parameter als Fehler behandelt wird
+            @Test ( expected = IllegalArgumentException.class)
+            public void detLeereMatrix() {
+            MyDet.determinant(null);
+            }
+
+            // Testet, ob der Fehlerfall einer nicht quadr. Matrix behandelt wird
+            @Test ( expected = IllegalArgumentException.class)
+            public void detNichtQuadratisch() {
+            double[] input = {5,6,7};
+            MyDet.determinant(input);
+            }
+            }
+         </test>
+      </tests>
+
+      <config>
+         <babysteps enable="TrUe" time="122" />
+         <timetracking enable="True" />
+      </config>
+
+   </exercise>
+</exercises>
 
