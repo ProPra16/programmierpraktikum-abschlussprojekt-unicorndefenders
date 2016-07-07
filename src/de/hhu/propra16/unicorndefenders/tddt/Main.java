@@ -14,6 +14,9 @@ public class Main extends Application {
         primaryStage.setTitle("DAMN! It's TDD, Bitch :D");
         primaryStage.setScene(new Scene(root, 1250, 600));
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
     }
 
 
