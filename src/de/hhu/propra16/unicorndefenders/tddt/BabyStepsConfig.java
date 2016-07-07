@@ -6,6 +6,13 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 
 
+/**
+ * Klasse zur Initialisierung und Aktualisierung des Timer-Labels
+ *
+ * @author Eyyüp
+ */
+
+
 public class BabyStepsConfig{
 
    public static  StringProperty sp = new SimpleStringProperty(null);   // StringProperty zur Aktualisierung der ablaufenden Zeit
