@@ -52,7 +52,7 @@ public class Controller implements Initializable {
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
-   static String puffer="";                    // zum Zwischenspeichern des Inhalts von testArea bzw. codeArea
+   static String puffer="";                    // zum Zwischenspeichern des Inhalts von testArea bzw. codeArea für BabySteps
 
    // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
    static boolean successfullCompiling=false;
@@ -60,7 +60,7 @@ public class Controller implements Initializable {
    // falls der Timer 0:00 erreicht hat, auf true gesetzt; dann Abbbruch des Threads in BabyStepsAbbruch()
    static boolean finished=false;
 
-   static boolean refactoring=false;  // falls zwischenzeitlich in REFACTOR gewechselt, Abbruch der anderen Threads (alle außer dem Main-Thread)
+   static boolean refactoring=false;  // falls zwischenzeitlich in REFACTOR gewechselt, Abbruch der anderen Threads (alle außer dem Main-Thread) bei BabySteps
 
    @FXML
    Label babyStepsTimer;              // Timer-Label in der FXML-Datei
@@ -144,10 +144,6 @@ public class Controller implements Initializable {
                   babyStepsTimeinSeconds = selectedExcercise.getBabystepsMaxTimeInSeconds();
 
 
-                  babyStepsHandling();       // ggf. BabySteps
-                  babyStepsAbbruch();        // ggf. Abbruch von BabySteps
-
-
                   List<File> codeList = selectedExcercise.getClassTemplate();
                   List<File> testList = selectedExcercise.getTestTemplate();
 
@@ -155,7 +151,11 @@ public class Controller implements Initializable {
                   codeArea.setText(codeList.get(0).getContent());
                   testArea.setText(testList.get(0).getContent());
 
+                  babyStepsHandling();       // ggf. BabySteps
+                  babyStepsAbbruch();        // ggf. Abbruch von BabySteps
+
                }
+
             }
             taskMenu.getSelectionModel().clearSelection();
             status.setText("RED");
