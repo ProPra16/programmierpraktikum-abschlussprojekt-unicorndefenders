@@ -47,6 +47,8 @@ public class Controller implements Initializable {
    @FXML
    Pane showBackToRed;
    @FXML
+   Label status;
+   @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
@@ -70,9 +72,11 @@ public class Controller implements Initializable {
    static boolean isBabyStepsEnabled;
    static int babyStepsTimeinSeconds;
 
-   CompilerManager compilerManager;
+   static CompilerManager compilerManager;
 
-   List<Integer> timeList;
+   static List<Integer> timeList;
+
+   static boolean userPickedTask = false;  // Damit Startbildschirm nicht zum arbeiten verwendet wird
 
 
 
@@ -154,6 +158,11 @@ public class Controller implements Initializable {
                }
             }
             taskMenu.getSelectionModel().clearSelection();
+            status.setText("RED");
+            testArea.setEditable(true);
+            codeArea.setEditable(false);
+            testArea.setStyle("-fx-border-color: #DF0101;");
+            userPickedTask = true;
          }
 
       });
@@ -169,48 +178,49 @@ public class Controller implements Initializable {
     *
     */
    public void compileCode(){
-      try {
-         // Baue zur Weiterleitung File-Instanzen
-         File myCode = new File("MyDet", codeArea.getText());
-         File myTest = new File("MyDetTest", testArea.getText());
+      if(userPickedTask) {
+         try {
+            // Baue zur Weiterleitung File-Instanzen
+            File myCode = new File("MyDet", codeArea.getText());
+            File myTest = new File("MyDetTest", testArea.getText());
 
-         // Neuer Compiler-Manager fuer das Kompilieren
-         compilerManager = new CompilerManager(myCode, myTest, cycle);
-         compilerManager.run();
+            // Neuer Compiler-Manager fuer das Kompilieren
+            compilerManager = new CompilerManager(myCode, myTest, cycle);
+            compilerManager.run();
 
-         // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
-         if (compilerManager.wasCompilerSuccessfull()) {
-            System.out.println("Success");
+            // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
+            if (compilerManager.wasCompilerSuccessfull()) {
+               System.out.println("Success");
 
-            // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
-            successfullCompiling=true;
+               // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
+               successfullCompiling = true;
 
-         } else {
-            System.out.println("NOP");
-            String message = compilerMessages.getText();
-            Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
-            Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
-            message = message+"Compile-Errors - Code:\n";
-            if(errorsCode != null) {
-               for (CompileError cmpErr : errorsCode) {
-                  System.out.println(cmpErr.getMessage());
-                  message = message + cmpErr.getMessage() + "\n";
+            } else {
+               System.out.println("NOP");
+               String message = compilerMessages.getText();
+               Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
+               Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
+               message = message + "Compile-Errors - Code:\n";
+               if (errorsCode != null) {
+                  for (CompileError cmpErr : errorsCode) {
+                     System.out.println(cmpErr.getMessage());
+                     message = message + cmpErr.getMessage() + "\n";
+                  }
                }
-            }
-            message = message+"Compile-Errors - Test:\n";
-            if(errorsTest != null) {
-               for (CompileError cmpErr : errorsTest) {
-                  System.out.println(cmpErr.getMessage());
-                  message = message + cmpErr.getMessage() + "\n";
+               message = message + "Compile-Errors - Test:\n";
+               if (errorsTest != null) {
+                  for (CompileError cmpErr : errorsTest) {
+                     System.out.println(cmpErr.getMessage());
+                     message = message + cmpErr.getMessage() + "\n";
+                  }
                }
-            }
-            compilerMessages.setText(message);
+               compilerMessages.setText(message);
 
+            }
+         } catch (Exception e) {
+            System.out.println(e.getMessage());
          }
-      } catch (Exception e){
-         System.out.println(e.getMessage());
       }
-
    }
 
 
@@ -220,112 +230,117 @@ public class Controller implements Initializable {
     *
     */
    public void next(){
+      if (userPickedTask) {
 
-      compileCode();
+         compileCode();
 
-      // Je nach laufender Phase muss anders reagiert werden.
-      if(cycle == GREEN) {
-         if(compilerManager.wasTestSuccessfull()) {
-            // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
-            // Frage dies ueber ein Alert ab
-            Alert checkRefactor = new Alert(Alert.AlertType.CONFIRMATION);
-            checkRefactor.setContentText("In den Modus REFACTOR wechseln?");
-            boolean goToRefactor = false;
-            Optional<ButtonType> pickedOption = checkRefactor.showAndWait();
-            if(pickedOption.get() == ButtonType.OK){
-               goToRefactor = true;
-            }
+         // Je nach laufender Phase muss anders reagiert werden.
+         if (cycle == GREEN) {
+            if (compilerManager.wasTestSuccessfull()) {
+               // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
+               // Frage dies ueber ein Alert ab
+               Alert checkRefactor = new Alert(Alert.AlertType.CONFIRMATION);
+               checkRefactor.setContentText("In den Modus REFACTOR wechseln?");
+               boolean goToRefactor = false;
+               Optional<ButtonType> pickedOption = checkRefactor.showAndWait();
+               if (pickedOption.get() == ButtonType.OK) {
+                  goToRefactor = true;
+               }
 
-            if(goToRefactor){
-               cycle = REFACTOR;
-               testArea.setEditable(true);
-               testArea.setStyle("-fx-border-color:#A4A4A4");
-               codeArea.setStyle("-fx-border-color:#A4A4A4");
+               if (goToRefactor) {
+                  cycle = REFACTOR;
+                  status.setText("REFACTOR");
+                  testArea.setEditable(true);
+                  testArea.setStyle("-fx-border-color:#A4A4A4");
+                  codeArea.setStyle("-fx-border-color:#A4A4A4");
 
-               // Mittels neuem Button in der Menuleiste oben kommt man wieder zurueck zur Phase RED
-               Button endRefactor = new Button("Refactor beenden");
-               showRefactor.getChildren().add(endRefactor);
+                  // Mittels neuem Button in der Menuleiste oben kommt man wieder zurueck zur Phase RED
+                  Button endRefactor = new Button("Refactor beenden");
+                  showRefactor.getChildren().add(endRefactor);
 
-               endRefactor.setOnMousePressed(new EventHandler<MouseEvent>() {
-                  @Override
-                  public void handle(MouseEvent event) {
-                     if(event.getButton() == MouseButton.PRIMARY){
+                  endRefactor.setOnMousePressed(new EventHandler<MouseEvent>() {
+                     @Override
+                     public void handle(MouseEvent event) {
+                        if (event.getButton() == MouseButton.PRIMARY) {
 
-                        compileCode();
+                           compileCode();
 
-                        // Man darf nur wechseln, wenn alle Teste erfolgreich sind
-                        if(compilerManager.wasTestSuccessfull()) {
+                           // Man darf nur wechseln, wenn alle Teste erfolgreich sind
+                           if (compilerManager.wasTestSuccessfull()) {
 
-                           testArea.setStyle("-fx-border-color: #DF0101;");
-                           codeArea.setStyle("-fx-border-color: #A4A4A4;");
-                           testArea.setEditable(true);
-                           codeArea.setEditable(false);
-                           cycle = RED;
-                           if(isBabyStepsEnabled){    // BabySteps durchführen und dann ggf. abbrechen
-                              babyStepsHandling();
-                              babyStepsAbbruch();
+                              testArea.setStyle("-fx-border-color: #DF0101;");
+                              codeArea.setStyle("-fx-border-color: #A4A4A4;");
+                              testArea.setEditable(true);
+                              codeArea.setEditable(false);
+                              cycle = RED;
+                              status.setText("RED");
+                              if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+                                 babyStepsHandling();
+                                 babyStepsAbbruch();
+                              }
+                              showRefactor.getChildren().clear();
                            }
-                           showRefactor.getChildren().clear();
                         }
                      }
-                  }
-               });
+                  });
 
-            }else {
-               testArea.setStyle("-fx-border-color: #DF0101;");
-               codeArea.setStyle("-fx-border-color: #A4A4A4;");
-               testArea.setEditable(true);
-               codeArea.setEditable(false);
-               cycle = RED;
-               if(isBabyStepsEnabled){    // BabySteps durchführen und dann ggf. abbrechen
-                  babyStepsHandling();
-                  babyStepsAbbruch();
+               } else {
+                  testArea.setStyle("-fx-border-color: #DF0101;");
+                  codeArea.setStyle("-fx-border-color: #A4A4A4;");
+                  testArea.setEditable(true);
+                  codeArea.setEditable(false);
+                  cycle = RED;
+                  status.setText("RED");
+                  if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+                     babyStepsHandling();
+                     babyStepsAbbruch();
+                  }
+               }
+            } else {
+               if (compilerManager.wasCompilerSuccessfull()) {
+                  String msg = compilerMessages.getText();
+                  msg = msg + "Fehler wurden noch nicht behoben :(\n ";
+                  compilerMessages.setText(msg);
+               } else {
+                  String msg = compilerMessages.getText();
+                  msg = msg + "Kompilieren fehlgeschlagen\n ";
+                  compilerMessages.setText(msg);
                }
             }
-         }
-         else{
-            if (compilerManager.wasCompilerSuccessfull() ){
-               String msg = compilerMessages.getText();
-               msg = msg + "Fehler wurden noch nicht behoben :(\n ";
-               compilerMessages.setText(msg);
-            } else {
-               String msg = compilerMessages.getText();
-               msg = msg + "Kompilieren fehlgeschlagen\n ";
-               compilerMessages.setText(msg);
-            }
-         }
-      }
-      else if (cycle == RED) {
-         if (compilerManager.wasTestSuccessfull()) {
-            codeArea.setStyle("-fx-border-color: #088A08;");
-            testArea.setStyle("-fx-border-color: #A4A4A4;");
-            codeArea.setEditable(true);
-            testArea.setEditable(false);
-            Button backToRed = new Button("BACK TO RED");
-            createBackToRedButton();
-            cycle = GREEN;
-            if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
-               babyStepsHandling();
-               babyStepsAbbruch();
-            }
-         } else {
-            if (compilerManager.wasCompilerSuccessfull()) {
-               String msg = compilerMessages.getText();
-               msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
-               compilerMessages.setText(msg);
-            } else {  // Wenn Code nicht kompiliert soll auch gewechselt werden
-               String msg = compilerMessages.getText();
-               msg = msg + "Kompilieren fehlgeschlagen\n ";
-               compilerMessages.setText(msg);
+         } else if (cycle == RED) {
+            if (compilerManager.wasTestSuccessfull()) {
                codeArea.setStyle("-fx-border-color: #088A08;");
                testArea.setStyle("-fx-border-color: #A4A4A4;");
                codeArea.setEditable(true);
                testArea.setEditable(false);
+               Button backToRed = new Button("BACK TO RED");
                createBackToRedButton();
                cycle = GREEN;
+               status.setText("GREEN");
                if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
                   babyStepsHandling();
                   babyStepsAbbruch();
+               }
+            } else {
+               if (compilerManager.wasCompilerSuccessfull()) {
+                  String msg = compilerMessages.getText();
+                  msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
+                  compilerMessages.setText(msg);
+               } else {  // Wenn Code nicht kompiliert soll auch gewechselt werden
+                  String msg = compilerMessages.getText();
+                  msg = msg + "Kompilieren fehlgeschlagen\n ";
+                  compilerMessages.setText(msg);
+                  codeArea.setStyle("-fx-border-color: #088A08;");
+                  testArea.setStyle("-fx-border-color: #A4A4A4;");
+                  codeArea.setEditable(true);
+                  testArea.setEditable(false);
+                  createBackToRedButton();
+                  cycle = GREEN;
+                  status.setText("GREEN");
+                  if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+                     babyStepsHandling();
+                     babyStepsAbbruch();
+                  }
                }
             }
          }
@@ -347,6 +362,7 @@ public class Controller implements Initializable {
                codeArea.setEditable(false);
                showBackToRed.getChildren().clear();
                cycle = RED;
+               status.setText("RED");
                if(isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
                   babyStepsHandling();
                   babyStepsAbbruch();

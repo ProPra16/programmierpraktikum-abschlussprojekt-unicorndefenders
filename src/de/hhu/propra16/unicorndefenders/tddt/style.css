@@ -5,20 +5,16 @@
 -fx-border-color: #A4A4A4;
 }
 
-#codeArea .content{
--fx-background-color: #FFFFFF;
-}
+
 
 #testArea{
 -fx-overflow-x: scroll;
 -fx-overflow-y: scroll;
 -fx-border-width: 2px;
--fx-border-color: #DF0101;
+-fx-border-color: #A4A4A4;
 }
 
-#testArea .content{
--fx-background-color: #FFFFFF;
-}
+
 
 #menu{
 -fx-background-color: #A4A4A4;
@@ -32,4 +28,8 @@
 #taskMenu{
 -fx-overflow-x: scroll;
 -fx-overflow-y: scroll;
+}
+
+#status{
+
 }
