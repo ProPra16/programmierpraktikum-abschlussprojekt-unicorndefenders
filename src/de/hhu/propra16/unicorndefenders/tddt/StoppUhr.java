@@ -1,5 +1,13 @@
 package de.hhu.propra16.unicorndefenders.tddt;
 
+
+/**
+ * Klasse zur Zeitmessung für das Tracking
+ *
+ * @author Eyyüp
+ */
+
+
 public class StoppUhr{
 
    public static long timeStart=0;     // Startzeit
