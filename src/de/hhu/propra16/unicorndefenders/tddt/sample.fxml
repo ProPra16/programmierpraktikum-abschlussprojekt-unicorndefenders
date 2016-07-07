@@ -14,6 +14,7 @@
 
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
 <BorderPane fx:controller="de.hhu.propra16.unicorndefenders.tddt.Controller"
             styleClass="root"
             xmlns:fx="http://javafx.com/fxml"
@@ -23,17 +24,11 @@
     <top>
 
        <HBox>
-            <MenuBar id="menu">
-                <Menu text="MyProgramm">
-                    <MenuItem text="open"></MenuItem>
-                    <MenuItem text="switch" onAction="#next"></MenuItem>
-                    <MenuItem text="Compile" onAction="#compileCode"></MenuItem>
-                </Menu>
-                <Menu text="Options"></Menu>
-                <Menu text="Refactor"></Menu>
-                <Menu text="next" onAction="#next"></Menu>
 
-            </MenuBar>
+          <Button text="NEXT" onAction="#next"></Button>
+          <Pane fx:id="showBackToRed">
+
+          </Pane>
           <Label fx:id="babyStepsTimer" text="TIME"></Label>
           <Pane fx:id="showRefactor">
 
@@ -42,32 +37,26 @@
     </top>
 
     <left>
-
-        <TableView fx:id="taskMenu">
-            <columns>
-                <TableColumn text="Aufgabe" prefWidth="150">
-                    <cellValueFactory ><PropertyValueFactory property="taskTitle" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn text="BabySteps?" prefWidth="100">
-                    <cellValueFactory><PropertyValueFactory property="babySteps" />
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                </FXCollections>
-            </items>
-        </TableView>
-
+           <TableView id="taskMenu" fx:id="taskMenu">
+               <columns>
+                   <TableColumn text="Aufgabe" prefWidth="150">
+                       <cellValueFactory ><PropertyValueFactory property="taskTitle" />
+                       </cellValueFactory>
+                   </TableColumn>
+                   <TableColumn text="BabySteps?" prefWidth="100">
+                       <cellValueFactory><PropertyValueFactory property="babySteps" />
+                       </cellValueFactory>
+                   </TableColumn>
+               </columns>
+               <items>
+                   <FXCollections fx:factory="observableArrayList">
+                   </FXCollections>
+               </items>
+           </TableView>
     </left>
 
     <center>
-        <VBox>
-            <HBox fx:id="tabManager">
-            </HBox>
-            <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="false"  maxWidth="525" minWidth="525" minHeight="440"></TextArea>
-        </VBox>
+       <TextArea id="codeArea" fx:id="codeArea" text="MUH" editable="false"  maxWidth="525" minWidth="525" minHeight="440"></TextArea>
     </center>
 
     <right>

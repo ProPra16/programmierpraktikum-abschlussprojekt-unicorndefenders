@@ -28,3 +28,8 @@
 -fx-overflow-x: scroll;
 -fx-overflow-y: scroll;
 }
+
+#taskMenu{
+-fx-overflow-x: scroll;
+-fx-overflow-y: scroll;
+}

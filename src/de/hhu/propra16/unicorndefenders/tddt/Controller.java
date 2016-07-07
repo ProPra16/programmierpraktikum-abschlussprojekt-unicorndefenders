@@ -43,9 +43,9 @@ public class Controller implements Initializable {
    @FXML
    TextArea compilerMessages;
    @FXML
-   HBox tabManager;
-   @FXML
    Pane showRefactor;
+   @FXML
+   Pane showBackToRed;
    @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
@@ -147,28 +147,7 @@ public class Controller implements Initializable {
                   List<File> codeList = selectedExcercise.getClassTemplate();
                   List<File> testList = selectedExcercise.getTestTemplate();
 
-                  // Alte Tabs sind nun redundant
-                  tabManager.getChildren().clear();
 
-                  // Stelle die Tabs zur Navigation innerhalb der jeweiligen Klassen der Aufgabe auf
-                  for(int i = 0; i < codeList.size(); i++){
-                     TabButton button = new TabButton(Integer.toString(i+1), codeList.get(i), testList.get(i));
-                     button.setOnMousePressed(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                           if(event.getButton()== MouseButton.PRIMARY){
-                              TabButton clickedButton = (TabButton) event.getSource();
-                              codeArea.setText(clickedButton.getCode().getContent());
-                              testArea.setText(clickedButton.getTest().getContent());
-
-
-                           }
-                        }
-                     });
-                     tabManager.getChildren().add(button);
-
-                  }
-                  // Zu Beginn soll die erste Klasse der Aufgabe angezeigt werden
                   codeArea.setText(codeList.get(0).getContent());
                   testArea.setText(testList.get(0).getContent());
 
@@ -282,6 +261,10 @@ public class Controller implements Initializable {
                            testArea.setEditable(true);
                            codeArea.setEditable(false);
                            cycle = RED;
+                           if(isBabyStepsEnabled){    // BabySteps durchführen und dann ggf. abbrechen
+                              babyStepsHandling();
+                              babyStepsAbbruch();
+                           }
                            showRefactor.getChildren().clear();
                         }
                      }
@@ -318,6 +301,8 @@ public class Controller implements Initializable {
             testArea.setStyle("-fx-border-color: #A4A4A4;");
             codeArea.setEditable(true);
             testArea.setEditable(false);
+            Button backToRed = new Button("BACK TO RED");
+            createBackToRedButton();
             cycle = GREEN;
             if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
                babyStepsHandling();
@@ -328,16 +313,50 @@ public class Controller implements Initializable {
                String msg = compilerMessages.getText();
                msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
                compilerMessages.setText(msg);
-            } else {
+            } else {  // Wenn Code nicht kompiliert soll auch gewechselt werden
                String msg = compilerMessages.getText();
                msg = msg + "Kompilieren fehlgeschlagen\n ";
                compilerMessages.setText(msg);
+               codeArea.setStyle("-fx-border-color: #088A08;");
+               testArea.setStyle("-fx-border-color: #A4A4A4;");
+               codeArea.setEditable(true);
+               testArea.setEditable(false);
+               createBackToRedButton();
+               cycle = GREEN;
+               if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+                  babyStepsHandling();
+                  babyStepsAbbruch();
+               }
             }
          }
       }
 
    }
 
+
+   public void createBackToRedButton(){
+      Button backToRed = new Button("BACK TO RED");
+      showBackToRed.getChildren().add(backToRed);
+      backToRed.setOnMousePressed(new EventHandler<MouseEvent>() {
+         @Override
+         public void handle(MouseEvent event) {
+            if(event.getButton() == MouseButton.PRIMARY){
+               testArea.setStyle("-fx-border-color: #DF0101;");
+               codeArea.setStyle("-fx-border-color: #A4A4A4;");
+               testArea.setEditable(true);
+               codeArea.setEditable(false);
+               showBackToRed.getChildren().clear();
+               cycle = RED;
+               if(isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+                  babyStepsHandling();
+                  babyStepsAbbruch();
+               }
+
+
+            }
+         }
+      });
+   }
 
 
 
