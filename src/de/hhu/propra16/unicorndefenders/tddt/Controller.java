@@ -12,13 +12,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import org.xml.sax.SAXException;
 import vk.core.api.CompileError;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -31,9 +28,12 @@ import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.REFACTOR;
 
-import javafx.application.Platform;
-
-
+/**
+ * Interaktion zwischen grafischer Oberflaeche und Nutzer
+ * Steuerung des Programmflusses
+ *
+ * @author Alessandra
+ */
 public class Controller implements Initializable {
 
    @FXML
@@ -49,41 +49,50 @@ public class Controller implements Initializable {
    @FXML
    Label status;
    @FXML
+   Button compile;
+   @FXML
+   Button next;
+   @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
-   static String puffer="";                    // zum Zwischenspeichern des Inhalts von testArea bzw. codeArea für BabySteps
+   static Cycle cycle;
 
-   // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
-   static boolean successfullCompiling=false;
+   static CompilerManager compilerManager;
+
+   static List<Integer> timeList;
+
+   static File codeBuffer;
+
+
+
+
+   /*
+    *   Variablen fuer BabySteps
+    */
+
+   @FXML
+   Label babyStepsTimer;              // Timer-Label in der FXML-Datei
+
+   static boolean isBabyStepsEnabled;
+   static int babyStepsTimeinSeconds;
 
    // falls der Timer 0:00 erreicht hat, auf true gesetzt; dann Abbbruch des Threads in BabyStepsAbbruch()
    static boolean finished=false;
 
    static boolean refactoring=false;  // falls zwischenzeitlich in REFACTOR gewechselt, Abbruch der anderen Threads (alle außer dem Main-Thread) bei BabySteps
 
-   @FXML
-   Label babyStepsTimer;              // Timer-Label in der FXML-Datei
+   static String puffer="";                    // zum Zwischenspeichern des Inhalts von testArea bzw. codeArea für BabySteps
+
+   // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
+   static boolean successfullCompiling=false;
 
 
-   static Cycle cycle;
 
-   // Fuer BabySteps
-   static boolean isBabyStepsEnabled;
-   static int babyStepsTimeinSeconds;
-
-   static CompilerManager compilerManager;
-
-   static List<Integer> timeList;
-
-   static boolean userPickedTask = false;  // Damit Startbildschirm nicht zum arbeiten verwendet wird
-
-   File codeBuffer;
-
-
-   // Dummy-Methoden
-
-
+   /*
+    * Wird bei Programmaufruf ausgefuehrt:
+    * - Lässt Katalog parsen und baut Auswahlmenuleiste mit entsprechenden Aufgaben
+    */
    @Override
    public void initialize(URL location, ResourceBundle resources) {
 
@@ -163,7 +172,8 @@ public class Controller implements Initializable {
             testArea.setEditable(true);
             codeArea.setEditable(false);
             testArea.setStyle("-fx-border-color: #DF0101;");
-            userPickedTask = true;
+            compile.setDisable(false);
+            next.setDisable(false);
          }
 
       });
@@ -179,51 +189,50 @@ public class Controller implements Initializable {
     *
     */
    public void compileCode(){
-      if(userPickedTask) {
-         try {
-            // Baue zur Weiterleitung File-Instanzen
-            File myCode = new File(ClassNameExtractor.getClassName(codeArea.getText()), codeArea.getText());
-            File myTest = new File(ClassNameExtractor.getClassName(testArea.getText()), testArea.getText());
+      try {
+         // Baue zur Weiterleitung File-Instanzen
+         File myCode = new File(ClassNameExtractor.getClassName(codeArea.getText()), codeArea.getText());
+         File myTest = new File(ClassNameExtractor.getClassName(testArea.getText()), testArea.getText());
 
-            // Neuer Compiler-Manager fuer das Kompilieren
-            compilerManager = new CompilerManager(myCode, myTest, cycle);
-            compilerManager.run();
+         // Neuer Compiler-Manager fuer das Kompilieren
+         compilerManager = new CompilerManager(myCode, myTest, cycle);
+         compilerManager.run();
 
-            // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
-            if (compilerManager.wasCompilerSuccessfull()) {
+         // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
+         if (compilerManager.wasCompilerSuccessfull()) {
 
 
-               // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
-               successfullCompiling = true;
+            // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
+            successfullCompiling = true;
 
-            } else {
-               if(!compilerManager.wasCompilerSuccessfull()) {
-                  String message = compilerMessages.getText();
-                  Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
-                  Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
+         } else {
+            if(!compilerManager.wasCompilerSuccessfull()) {
+               String message = compilerMessages.getText();
+               Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
+               Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
 
-                  message = message + "Compile-Errors - Code:\n";
-                  if (errorsCode != null) {
-                     for (CompileError cmpErr : errorsCode) {
-                        System.out.println(cmpErr.getMessage());
-                        message = message + cmpErr.getMessage() + "\n";
-                     }
+               message = message + "Compile-Errors - Code:\n";
+               if (errorsCode != null) {
+                  for (CompileError cmpErr : errorsCode) {
+                     System.out.println(cmpErr.getMessage());
+                     message = message + cmpErr.getMessage() + "\n";
                   }
-                  message = message + "Compile-Errors - Test:\n";
-                  if (errorsTest != null) {
-                     for (CompileError cmpErr : errorsTest) {
-                        System.out.println(cmpErr.getMessage());
-                        message = message + cmpErr.getMessage() + "\n";
-                     }
-                  }
-
-               compilerMessages.setText(message);
                }
+               message = message + "Compile-Errors - Test:\n";
+               if (errorsTest != null) {
+                  for (CompileError cmpErr : errorsTest) {
+                     System.out.println(cmpErr.getMessage());
+                     message = message + cmpErr.getMessage() + "\n";
+                  }
+               }
+
+            compilerMessages.setText(message);
             }
-         } catch (Exception e) {
-            System.out.println(e.getMessage());
          }
+      } catch (Exception e) {
+         System.out.println(e.getMessage());
       }
+
    }
 
 
@@ -233,85 +242,89 @@ public class Controller implements Initializable {
     *
     */
    public void next(){
-      if (userPickedTask) {
 
-         compileCode();
+      compileCode();
 
-         // Je nach laufender Phase muss anders reagiert werden.
-         if (cycle == GREEN) {
-            if (compilerManager.wasTestSuccessfull()) {
-               // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
-               // Frage dies ueber ein Alert ab
-               Alert checkRefactor = new Alert(Alert.AlertType.CONFIRMATION);
-               checkRefactor.setContentText("In den Modus REFACTOR wechseln?");
-               boolean goToRefactor = false;
-               Optional<ButtonType> pickedOption = checkRefactor.showAndWait();
-               if (pickedOption.get() == ButtonType.OK) {
-                  goToRefactor = true;
-               }
-
-               if (goToRefactor) {
-                  backToRed.setDisable(true);
-                  cycle = REFACTOR;
-                  status.setText("REFACTOR");
-                  testArea.setEditable(true);
-                  testArea.setStyle("-fx-border-color:#A4A4A4");
-                  codeArea.setStyle("-fx-border-color:#A4A4A4");
-
-                  // Mittels neuem Button in der Menuleiste oben kommt man wieder zurueck zur Phase RED
-                  Button endRefactor = new Button("Refactor beenden");
-                  refactor.setDisable(false);
-
-               } else {
-                  initRedMode();
-               }
-            } else {
-               if (compilerManager.wasCompilerSuccessfull()) {
-                  String msg = compilerMessages.getText();
-                  msg = msg + "Fehler wurden noch nicht behoben :(\n ";
-                  compilerMessages.setText(msg);
-               } else {
-                  String msg = compilerMessages.getText();
-                  msg = msg + "Kompilieren fehlgeschlagen\n ";
-                  compilerMessages.setText(msg);
-               }
+      // Je nach laufender Phase muss anders reagiert werden.
+      if (cycle == GREEN) {
+         if (compilerManager.wasTestSuccessfull()) {
+            // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
+            // Frage dies ueber ein Alert ab
+            Alert checkRefactor = new Alert(Alert.AlertType.CONFIRMATION);
+            checkRefactor.setContentText("In den Modus REFACTOR wechseln?");
+            boolean goToRefactor = false;
+            Optional<ButtonType> pickedOption = checkRefactor.showAndWait();
+            if (pickedOption.get() == ButtonType.OK) {
+               goToRefactor = true;
             }
-         } else if (cycle == RED) {
-            if (compilerManager.wasTestSuccessfull()) {
-               initGreenMode();
-            } else {
-               if (compilerManager.wasCompilerSuccessfull()) {
-                  String msg = compilerMessages.getText();
-                  msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
-                  compilerMessages.setText(msg);
-               } else {  // Wenn Code nicht kompiliert soll auch gewechselt werden
-                  String msg = compilerMessages.getText();
-                  msg = msg + "Kompilieren fehlgeschlagen\n ";
-                  compilerMessages.setText(msg);
-                  initGreenMode();
 
-               }
+            if (goToRefactor) {
+               backToRed.setDisable(true);
+               cycle = REFACTOR;
+               status.setText("REFACTOR");
+               testArea.setEditable(true);
+               testArea.setStyle("-fx-border-color:#A4A4A4");
+               codeArea.setStyle("-fx-border-color:#A4A4A4");
+
+               // Mittels neuem Button in der Menuleiste oben kommt man wieder zurueck zur Phase RED
+               Button endRefactor = new Button("Refactor beenden");
+               refactor.setDisable(false);
+
+            } else {
+               initRedMode();
+            }
+         } else {
+            if (compilerManager.wasCompilerSuccessfull()) {
+               String msg = compilerMessages.getText();
+               msg = msg + "Fehler wurden noch nicht behoben :(\n ";
+               compilerMessages.setText(msg);
+            } else {
+               String msg = compilerMessages.getText();
+               msg = msg + "Kompilieren fehlgeschlagen\n ";
+               compilerMessages.setText(msg);
+            }
+         }
+      } else if (cycle == RED) {
+         if (compilerManager.wasTestSuccessfull()) {
+            initGreenMode();
+         } else {
+            if (compilerManager.wasCompilerSuccessfull()) {
+               String msg = compilerMessages.getText();
+               msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
+               compilerMessages.setText(msg);
+            } else {  // Wenn Code nicht kompiliert soll auch gewechselt werden
+               String msg = compilerMessages.getText();
+               msg = msg + "Kompilieren fehlgeschlagen\n ";
+               compilerMessages.setText(msg);
+               initGreenMode();
+
             }
          }
       }
 
+
    }
 
-
+   /*
+    * Wechsel von REFACTOR zu RED
+    */
    public void endRefactor(){
 
-         compileCode();
+      compileCode();
 
-         // Man darf nur wechseln, wenn alle Teste erfolgreich sind
-         if (compilerManager.wasTestSuccessfull()) {
+      // Man darf nur wechseln, wenn alle Teste erfolgreich sind
+      if (compilerManager.wasTestSuccessfull()) {
 
-            initRedMode();
-            refactor.setDisable(true);
-         }
+         initRedMode();
+         refactor.setDisable(true);
+      }
 
 
    }
 
+   /*
+    *  Initialisierung von RED
+    */
    public void initRedMode() {
       testArea.setStyle("-fx-border-color: #DF0101;");
       codeArea.setStyle("-fx-border-color: #A4A4A4;");
@@ -326,6 +339,9 @@ public class Controller implements Initializable {
       }
    }
 
+   /*
+    * Initialisierung von GREEN
+    */
    public void initGreenMode(){
       // Muessen alten Code speichern, falls zurueckgesprungen wird
       codeBuffer = new File("BufferFile", codeArea.getText());
@@ -343,21 +359,23 @@ public class Controller implements Initializable {
       }
    }
 
-
-
+   /*
+    * Ruecksprung von GREEN nach RED
+    */
    public void backToRed() {
 
-         testArea.setStyle("-fx-border-color: #DF0101;");
-         codeArea.setStyle("-fx-border-color: #A4A4A4;");
-         testArea.setEditable(true);
-         codeArea.setEditable(false);
-         codeArea.setText(codeBuffer.getContent());
-         cycle = RED;
-         status.setText("RED");
-         if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
-            babyStepsHandling();
-            babyStepsAbbruch();
-         }
+      testArea.setStyle("-fx-border-color: #DF0101;");
+      codeArea.setStyle("-fx-border-color: #A4A4A4;");
+      testArea.setEditable(true);
+      codeArea.setEditable(false);
+      // Setze den Code zurueck auf den Stand vor Beginn der Phase GREEN
+      codeArea.setText(codeBuffer.getContent());
+      cycle = RED;
+      status.setText("RED");
+      if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
+         babyStepsHandling();
+         babyStepsAbbruch();
+      }
       backToRed.setDisable(true);
 
 

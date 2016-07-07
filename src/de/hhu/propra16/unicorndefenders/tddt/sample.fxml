@@ -36,10 +36,10 @@
              <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
           </Label>
 
-          <Button text="COMPILE" onAction="#compileCode">
+          <Button fx:id="compile" text="COMPILE" onAction="#compileCode" disable="true">
              <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
           </Button>
-          <Button text="NEXT" onAction="#next">
+          <Button fx:id="next" text="NEXT" onAction="#next" disable="true">
              <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
           </Button>
           <Button fx:id="backToRed" text="BACK TO RED" disable="true" onMouseClicked="#backToRed"></Button>
