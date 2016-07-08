@@ -91,6 +91,7 @@ public class CompilerManager {
       }
 
       // Alles ok
+      compilationComplete = true;
       testComplete = true;
       return true;
    }
