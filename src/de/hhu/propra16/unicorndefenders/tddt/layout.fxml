@@ -29,13 +29,6 @@
        <HBox >
           <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
 
-          <Label text="Phase:">
-             <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
-          </Label>
-          <Label fx:id="status" text="-">
-             <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
-          </Label>
-
           <Button fx:id="compile" text="COMPILE" onAction="#compileCode" disable="true">
              <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
           </Button>
@@ -46,6 +39,12 @@
           <Button fx:id="refactor" text="REFACTOR" disable="true" onMouseClicked="#endRefactor"></Button>
 
 
+          <Label text="Phase:">
+             <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
+          </Label>
+          <Label fx:id="status" text="-">
+             <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
+          </Label>
 
           <Label text="BabySteps-Timer:">
              <padding><Insets top="5" right="10" bottom="5" left="10"/></padding></Label>
