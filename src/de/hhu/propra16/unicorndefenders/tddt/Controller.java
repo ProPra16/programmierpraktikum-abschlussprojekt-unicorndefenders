@@ -19,10 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
@@ -60,9 +57,10 @@ public class Controller implements Initializable {
 
    static CompilerManager compilerManager;
 
-   static List<Integer> timeList;
+   static ArrayList<Integer> timeList = new ArrayList<>();
 
    static File codeBuffer;
+
 
 
 
@@ -160,6 +158,8 @@ public class Controller implements Initializable {
 
                   codeArea.setText(codeList.get(0).getContent());
                   testArea.setText(testList.get(0).getContent());
+
+
 
                   babyStepsHandling();       // ggf. BabySteps
                   babyStepsAbbruch();        // ggf. Abbruch von BabySteps
@@ -266,8 +266,7 @@ public class Controller implements Initializable {
                testArea.setStyle("-fx-border-color:#A4A4A4");
                codeArea.setStyle("-fx-border-color:#A4A4A4");
 
-               // Mittels neuem Button in der Menuleiste oben kommt man wieder zurueck zur Phase RED
-               Button endRefactor = new Button("Refactor beenden");
+               // Button fuer neuen Phasenbeginn freigeben
                refactor.setDisable(false);
 
             } else {
