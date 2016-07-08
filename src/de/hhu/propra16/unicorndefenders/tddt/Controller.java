@@ -198,15 +198,18 @@ public class Controller implements Initializable {
          compilerManager = new CompilerManager(myCode, myTest, cycle);
          compilerManager.run();
 
+         String message = "";
          // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
          if (compilerManager.wasCompilerSuccessfull()) {
+            message = "Compiling: Successful! :)\n";
 
             // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
             successfullCompiling = true;
 
          } else {
             if(!compilerManager.wasCompilerSuccessfull()) {
-               String message = "";
+               message = "Compiling: Not so successful! :(\n";
+
                Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
                Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
 
@@ -224,9 +227,10 @@ public class Controller implements Initializable {
                   }
                }
 
-            compilerMessages.setText(message);
+
             }
          }
+         compilerMessages.setText(message);
       } catch (Exception e) {
          System.out.println(e.getMessage());
       }
