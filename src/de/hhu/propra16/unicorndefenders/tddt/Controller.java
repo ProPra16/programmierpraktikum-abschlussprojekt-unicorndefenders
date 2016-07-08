@@ -207,28 +207,26 @@ public class Controller implements Initializable {
             successfullCompiling = true;
 
          } else {
-            if(!compilerManager.wasCompilerSuccessfull()) {
-               message = "Compiling: Not so successful! :(\n";
 
-               Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
-               Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
+            message = "Compiling: Not so successful! :(\n";
 
-               if (errorsCode != null) {
-                  message = message + "Compile-Errors - Code:\n";
-                  for (CompileError cmpErr : errorsCode) {
-                     message = message + cmpErr.toString() + "\n";
-                  }
+            Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
+            Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
+
+            if (errorsCode != null) {
+               message = message + "Compile-Errors - Code:\n";
+               for (CompileError cmpErr : errorsCode) {
+                  message = message + cmpErr.toString() + "\n";
                }
-
-               if (errorsTest != null) {
-                  message = message + "Compile-Errors - Test:\n";
-                  for (CompileError cmpErr : errorsTest) {
-                     message = message + cmpErr.toString() + "\n";
-                  }
-               }
-
-
             }
+
+            if (errorsTest != null) {
+               message = message + "Compile-Errors - Test:\n";
+               for (CompileError cmpErr : errorsTest) {
+                  message = message + cmpErr.toString() + "\n";
+               }
+            }
+
          }
          compilerMessages.setText(message);
       } catch (Exception e) {
@@ -270,6 +268,7 @@ public class Controller implements Initializable {
 
                // Button fuer neuen Phasenbeginn freigeben
                refactor.setDisable(false);
+               next.setDisable(true);
 
             } else {
                initRedMode();
@@ -277,7 +276,7 @@ public class Controller implements Initializable {
          } else {
             if (compilerManager.wasCompilerSuccessfull()) {
                String msg = compilerMessages.getText();
-               msg = msg + "Fehler wurden noch nicht behoben :(\n ";
+               msg = msg + "Es gibt noch fehlschlagene Teste :(\nErst nach dem Beheben kann gewechselt werden.\n ";
                compilerMessages.setText(msg);
             } else {
                String msg = compilerMessages.getText();
@@ -286,20 +285,13 @@ public class Controller implements Initializable {
             }
          }
       } else if (cycle == RED) {
-         if (compilerManager.wasTestSuccessfull()) {
+         if (compilerManager.wasTestSuccessfull() || !compilerManager.wasCompilerSuccessfull()) {
             initGreenMode();
          } else {
-            if (compilerManager.wasCompilerSuccessfull()) {
-               String msg = compilerMessages.getText();
-               msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
-               compilerMessages.setText(msg);
-            } else {  // Wenn Code nicht kompiliert soll auch gewechselt werden
-               String msg = compilerMessages.getText();
-               msg = msg + "Kompilieren fehlgeschlagen\n ";
-               compilerMessages.setText(msg);
-               initGreenMode();
+            String msg = compilerMessages.getText();
+            msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
+            compilerMessages.setText(msg);
 
-            }
          }
       }
 
@@ -318,6 +310,7 @@ public class Controller implements Initializable {
 
          initRedMode();
          refactor.setDisable(true);
+         next.setDisable(false);
       }
 
 
