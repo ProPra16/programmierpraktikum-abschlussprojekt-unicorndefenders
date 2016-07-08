@@ -6,6 +6,7 @@ import de.hhu.propra16.unicorndefenders.tddt.config.Exercise;
 import de.hhu.propra16.unicorndefenders.tddt.files.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -50,6 +51,8 @@ public class Controller implements Initializable {
    @FXML
    Button next;
    @FXML
+   Button tracking;
+   @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
@@ -57,7 +60,7 @@ public class Controller implements Initializable {
 
    static CompilerManager compilerManager;
 
-   static ArrayList<Integer> timeList = new ArrayList<>();
+   static ArrayList<TrackPoint> trackList = new ArrayList<>();
 
    static File codeBuffer;
 
@@ -159,7 +162,18 @@ public class Controller implements Initializable {
                   codeArea.setText(codeList.get(0).getContent());
                   testArea.setText(testList.get(0).getContent());
 
+                  status.setText("RED");
+                  testArea.setEditable(true);
+                  codeArea.setEditable(false);
+                  testArea.setStyle("-fx-border-color: #DF0101;");
+                  compile.setDisable(false);
+                  next.setDisable(false);
+                  tracking.setDisable(false);
 
+                  // neue Aufgabe angefangen, also werden die Zeiten der alten Aufgabe geloescht
+                  trackList = new ArrayList<TrackPoint>();
+
+                  StoppUhr.starten();
 
                   babyStepsHandling();       // ggf. BabySteps
                   babyStepsAbbruch();        // ggf. Abbruch von BabySteps
@@ -168,12 +182,8 @@ public class Controller implements Initializable {
 
             }
             taskMenu.getSelectionModel().clearSelection();
-            status.setText("RED");
-            testArea.setEditable(true);
-            codeArea.setEditable(false);
-            testArea.setStyle("-fx-border-color: #DF0101;");
-            compile.setDisable(false);
-            next.setDisable(false);
+
+
          }
 
       });
@@ -214,14 +224,16 @@ public class Controller implements Initializable {
             Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
 
             if (errorsCode != null) {
-               message = message + "Compile-Errors - Code:\n";
+               if(errorsCode.size() > 0)
+                  message = message + "-------------------------Compile-Errors - Code:\n";
                for (CompileError cmpErr : errorsCode) {
                   message = message + cmpErr.toString() + "\n";
                }
             }
 
             if (errorsTest != null) {
-               message = message + "Compile-Errors - Test:\n";
+               if(errorsTest.size() > 0)
+                  message = message + "-------------------------Compile-Errors - Test:\n";
                for (CompileError cmpErr : errorsTest) {
                   message = message + cmpErr.toString() + "\n";
                }
@@ -259,6 +271,11 @@ public class Controller implements Initializable {
             }
 
             if (goToRefactor) {
+               StoppUhr.beenden();
+               trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN));
+
+               StoppUhr.starten();
+
                backToRed.setDisable(true);
                cycle = REFACTOR;
                status.setText("REFACTOR");
@@ -271,6 +288,8 @@ public class Controller implements Initializable {
                next.setDisable(true);
 
             } else {
+               StoppUhr.beenden();
+               trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN));
                initRedMode();
             }
          } else {
@@ -286,6 +305,8 @@ public class Controller implements Initializable {
          }
       } else if (cycle == RED) {
          if (compilerManager.wasTestSuccessfull() || !compilerManager.wasCompilerSuccessfull()) {
+            StoppUhr.beenden();
+            trackList.add(new TrackPoint(StoppUhr.zeit(), RED));
             initGreenMode();
          } else {
             String msg = compilerMessages.getText();
@@ -307,6 +328,8 @@ public class Controller implements Initializable {
 
       // Man darf nur wechseln, wenn alle Teste erfolgreich sind
       if (compilerManager.wasTestSuccessfull()) {
+         StoppUhr.beenden();
+         trackList.add(new TrackPoint(StoppUhr.zeit(), REFACTOR));
 
          initRedMode();
          refactor.setDisable(true);
@@ -327,6 +350,7 @@ public class Controller implements Initializable {
       backToRed.setDisable(true);
       cycle = RED;
       status.setText("RED");
+      StoppUhr.starten();
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
          babyStepsHandling();
          babyStepsAbbruch();
@@ -347,6 +371,7 @@ public class Controller implements Initializable {
       backToRed.setDisable(false);
       cycle = GREEN;
       status.setText("GREEN");
+      StoppUhr.starten();
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
          babyStepsHandling();
          babyStepsAbbruch();
@@ -366,6 +391,7 @@ public class Controller implements Initializable {
       codeArea.setText(codeBuffer.getContent());
       cycle = RED;
       status.setText("RED");
+      StoppUhr.starten();
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
          babyStepsHandling();
          babyStepsAbbruch();
@@ -374,6 +400,12 @@ public class Controller implements Initializable {
 
 
 
+   }
+
+   /*
+    * Oeffnet neues Fenster mit entsprechenden Tracking-Diagrammen
+    */
+   public void startTracking(Event event) {
    }
 
 
@@ -477,6 +509,7 @@ public class Controller implements Initializable {
       t.start();  // Starte den Thread t
 
    }
+
 
 
 }
