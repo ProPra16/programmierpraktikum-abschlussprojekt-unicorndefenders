@@ -201,28 +201,26 @@ public class Controller implements Initializable {
          // Im Fehlerfall werden die Compiler-Meldungen in das untere Feld geschrieben
          if (compilerManager.wasCompilerSuccessfull()) {
 
-
             // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
             successfullCompiling = true;
 
          } else {
             if(!compilerManager.wasCompilerSuccessfull()) {
-               String message = compilerMessages.getText();
+               String message = "";
                Collection<CompileError> errorsCode = compilerManager.getSourceFile().getCompilerErrors();
                Collection<CompileError> errorsTest = compilerManager.getTestFile().getCompilerErrors();
 
-               message = message + "Compile-Errors - Code:\n";
                if (errorsCode != null) {
+                  message = message + "Compile-Errors - Code:\n";
                   for (CompileError cmpErr : errorsCode) {
-                     System.out.println(cmpErr.getMessage());
-                     message = message + cmpErr.getMessage() + "\n";
+                     message = message + cmpErr.toString() + "\n";
                   }
                }
-               message = message + "Compile-Errors - Test:\n";
+
                if (errorsTest != null) {
+                  message = message + "Compile-Errors - Test:\n";
                   for (CompileError cmpErr : errorsTest) {
-                     System.out.println(cmpErr.getMessage());
-                     message = message + cmpErr.getMessage() + "\n";
+                     message = message + cmpErr.toString() + "\n";
                   }
                }
 
@@ -381,6 +379,9 @@ public class Controller implements Initializable {
 
    }
 
+
+
+   // ----------------     AB HIER: Methoden speziell für BABYSTEPS || Aufgabengebiet: Eyyuep
 
    public void babyStepsHandling() {  // führt BabySteps aus
 
