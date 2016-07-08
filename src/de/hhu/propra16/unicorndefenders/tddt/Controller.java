@@ -56,13 +56,13 @@ public class Controller implements Initializable {
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
-   static Cycle cycle;
+   static Cycle cycle;        // aktueller Zyklus
 
-   static CompilerManager compilerManager;
+   static CompilerManager compilerManager;      // Infovermittler bzgl. Tests und Compiler zwischen den Methoden
 
    static ArrayList<TrackPoint> trackList = new ArrayList<>();
 
-   static File codeBuffer;
+   static File codeBuffer;   // speichert Code, für den Fall, dass User von GREEN nach RED zurueckspringen will
 
 
 

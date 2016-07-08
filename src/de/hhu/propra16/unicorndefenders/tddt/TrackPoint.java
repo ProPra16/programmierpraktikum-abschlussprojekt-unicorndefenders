@@ -1,7 +1,9 @@
 package de.hhu.propra16.unicorndefenders.tddt;
 
 /**
- * Created by Alessa on 08.07.16.
+ * Speicherung von Phasen mit zug. Zeiten zur Uebergabe vom Controller an Tracking
+ *
+ * @author Alessandra
  */
 public class TrackPoint {
 
