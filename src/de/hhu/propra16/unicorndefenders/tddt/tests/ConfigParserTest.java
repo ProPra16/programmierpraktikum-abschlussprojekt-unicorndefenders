@@ -67,6 +67,21 @@ public class ConfigParserTest {
 
    }
 
+   @Test
+   public void defaultValues() throws Exception {
+      DummyFile file = new DummyFile(textDefaultValues);
+      ConfigParser parser = new ConfigParser(file);
+      parser.parse();
+
+      assertEquals(1, parser.getCatalog().getExercises().size());
+      Exercise exercise = parser.getCatalog().getExercises().get(0);
+
+      assertEquals(false, exercise.isBabystepsEnabled());
+      assertEquals(false, exercise.isTrackingEnabled());
+
+      // Wenn ausgeschaltet ist wird auch nichts weiter gelesen
+      assertEquals(0, exercise.getBabystepsMaxTimeInSeconds());
+   }
 
 
    private String textWrongRoot = "<exercisesssss>\n" +
@@ -160,6 +175,28 @@ public class ConfigParserTest {
            "      <config>\n" +
            "         <babysteps  time=\"120\"/>\n" +
            "         <timetracking enable=\"false\" />\n" +
+           "      </config>      \n" +
+           "   </exercise>\n" +
+           "</exercises>";
+
+   private String textDefaultValues = "<exercises>\n" +
+           "   <exercise name=\"Testaufgabe\">\n" +
+           "      <description>Eine Testbeschreibung</description>\n" +
+           "      <classes>\n" +
+           "         <class name=\"Tesklasse\">\n" +
+           "            public class Testklasse {}\n" +
+           "         </class>\n" +
+           "      </classes>\n" +
+           "      \n" +
+           "      <tests>\n" +
+           "         <test name=\"TestklasseTest\">\n" +
+           "            public class TestklasseTest {}\n" +
+           "         </test>\n" +
+           "      </tests>\n" +
+           "\n" +
+           "      <config>\n" +
+           "         <babysteps enable=\"ungeultig\" time=\"120\"/>\n" +
+           "         <timetracking enable=\"auch ungeueltig\" />\n" +
            "      </config>      \n" +
            "   </exercise>\n" +
            "</exercises>";
