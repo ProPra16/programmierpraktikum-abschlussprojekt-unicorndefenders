@@ -2,7 +2,10 @@ package de.hhu.propra16.unicorndefenders.tddt.files;
 
 import de.hhu.propra16.unicorndefenders.tddt.Cycle;
 import vk.core.api.CompilationUnit;
+import vk.core.api.TestFailure;
 import vk.core.api.TestResult;
+
+import java.util.Collection;
 
 /**
  * Datei fuer jUnit Tests.
@@ -34,6 +37,15 @@ public class TestCode extends Source {
     */
    public void setTestResult(TestResult testResult) {
       this.testResult = testResult;
+   }
+
+   /**
+    * Gibt alle Test zurueck, die fehlgeschlagen sind.
+    *
+    * @return Fehlgeschlagene Tests
+    */
+   public Collection<TestFailure> getTestFailures() {
+      return testResult.getTestFailures();
    }
 
    /**
