@@ -274,7 +274,9 @@ public class Controller implements Initializable {
 
             if (goToRefactor) {
                StoppUhr.beenden();
-               trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN));
+               File code = new File("Code", codeArea.getText());
+               File test = new File("Test", testArea.getText());
+               trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN, code, test));
 
                StoppUhr.starten();
 
@@ -291,7 +293,9 @@ public class Controller implements Initializable {
 
             } else {
                StoppUhr.beenden();
-               trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN));
+               File code = new File("Code", codeArea.getText());
+               File test = new File("Test", testArea.getText());
+               trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN, code, test));
                initRedMode();
             }
          } else {
@@ -309,7 +313,9 @@ public class Controller implements Initializable {
       } else if (cycle == RED) {
          if (compilerManager.wasTestSuccessfull() || !compilerManager.wasCompilerSuccessfull()) {
             StoppUhr.beenden();
-            trackList.add(new TrackPoint(StoppUhr.zeit(), RED));
+            File code = new File("Code", codeArea.getText());
+            File test = new File("Test", testArea.getText());
+            trackList.add(new TrackPoint(StoppUhr.zeit(), RED, code, test));
             initGreenMode();
          } else {
             String msg = compilerMessages.getText();
@@ -323,6 +329,9 @@ public class Controller implements Initializable {
 
    }
 
+   /*
+    * Schreibt die aktuell fehlgeschlagenen Teste in das untere TextArea
+    */
    public void showFailedTests(){
       String msg = compilerMessages.getText();
       Collection<TestFailure> failedTests= compilerManager.getTestFile().getTestFailures();
@@ -347,7 +356,9 @@ public class Controller implements Initializable {
       // Man darf nur wechseln, wenn alle Teste erfolgreich sind
       if (compilerManager.wasTestSuccessfull()) {
          StoppUhr.beenden();
-         trackList.add(new TrackPoint(StoppUhr.zeit(), REFACTOR));
+         File code = new File("Code", codeArea.getText());
+         File test = new File("Test", testArea.getText());
+         trackList.add(new TrackPoint(StoppUhr.zeit(), REFACTOR, code, test));
 
          initRedMode();
          refactor.setDisable(true);
