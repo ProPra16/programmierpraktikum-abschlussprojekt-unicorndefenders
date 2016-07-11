@@ -49,10 +49,10 @@ public class TestCode extends Source {
    }
 
    /**
-    * Prueft, ob die fuer einen Entswicjlungsstatus korrekte Anzahl Tests fehlgeschlagen is.
+    * Prueft, ob die fuer einen Entwicklungsstatus korrekte Anzahl Tests fehlgeschlagen ist.
     *
-    * @param cycle
-    * @return
+    * @param cycle Entwicklungszyklus
+    * @return Ist die korrekte Anzahl Tests in Abhaengigkeit vom Entwicklungszyklus fehlgeschlagen?
     */
    public boolean isValidNumberOfFailedTests(Cycle cycle) {
       if (cycle == Cycle.RED) {
