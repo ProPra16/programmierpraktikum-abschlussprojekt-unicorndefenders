@@ -3,6 +3,7 @@
 -fx-overflow-y: scroll;
 -fx-border-width: 2px;
 -fx-border-color: #A4A4A4;
+-fx-font-family: monospace;
 }
 
 
@@ -12,6 +13,7 @@
 -fx-overflow-y: scroll;
 -fx-border-width: 2px;
 -fx-border-color: #A4A4A4;
+-fx-font-family: monospace;
 }
 
 
@@ -23,6 +25,7 @@
 #compilerMessages{
 -fx-overflow-x: scroll;
 -fx-overflow-y: scroll;
+-fx-font-family: monospace;
 }
 
 #taskMenu{

@@ -8,19 +8,19 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("layout.fxml"));
-        primaryStage.setTitle("DAMN! It's TDD, Bitch :D");
-        primaryStage.setScene(new Scene(root, 1250, 600));
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(event -> {
-            System.exit(0);
-        });
-    }
+   @Override
+   public void start(Stage primaryStage) throws Exception{
+      Parent root = FXMLLoader.load(getClass().getResource("layout.fxml"));
+      primaryStage.setTitle("DAMN! It's TDD, Bitch :D");
+      primaryStage.setScene(new Scene(root, 1250, 600));
+      primaryStage.show();
+      primaryStage.setResizable(false);
+      primaryStage.setOnCloseRequest(event -> {
+         System.exit(0);
+      });
+   }
 
-
-    public static void main(String[] args) {
+   public static void main(String[] args) {
         launch(args);
     }
 }
