@@ -15,6 +15,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import org.xml.sax.SAXException;
 import vk.core.api.CompileError;
+import vk.core.api.TestFailure;
+import vk.core.api.TestResult;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
@@ -295,8 +297,9 @@ public class Controller implements Initializable {
          } else {
             if (compilerManager.wasCompilerSuccessfull()) {
                String msg = compilerMessages.getText();
-               msg = msg + "Es gibt noch fehlschlagene Teste :(\nErst nach dem Beheben kann gewechselt werden.\n ";
+               msg = msg + "Es gibt noch fehlschlagene Teste :(\nErst nach dem Beheben kann gewechselt werden:\n ";
                compilerMessages.setText(msg);
+               showFailedTests();
             } else {
                String msg = compilerMessages.getText();
                msg = msg + "Kompilieren fehlgeschlagen\n ";
@@ -310,14 +313,29 @@ public class Controller implements Initializable {
             initGreenMode();
          } else {
             String msg = compilerMessages.getText();
-            msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln\n";
+            msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln:\n";
             compilerMessages.setText(msg);
+            showFailedTests();
 
          }
       }
 
 
    }
+
+   public void showFailedTests(){
+      String msg = compilerMessages.getText();
+      Collection<TestFailure> failedTests= compilerManager.getTestFile().getTestFailures();
+      if(failedTests.size() > 0) {
+         msg = msg + "Fehlgeschlagene Teste:\n\n";
+         for (TestFailure failure : failedTests)
+            msg = msg + failure.getMethodName() + "\n" + failure.getMessage()+"\n\n";
+      } else {
+         msg = msg + "Keine fehlgeschlagenen Teste.\n";
+      }
+      compilerMessages.setText(msg);
+   }
+
 
    /*
     * Wechsel von REFACTOR zu RED
@@ -334,6 +352,13 @@ public class Controller implements Initializable {
          initRedMode();
          refactor.setDisable(true);
          next.setDisable(false);
+      }else{
+         if(compilerManager.wasCompilerSuccessfull()){
+            String msg = "Es gibt noch Teste die fehlschlagen:\n\n";
+            compilerMessages.setText(msg);
+            showFailedTests();
+
+         }
       }
 
 
@@ -411,6 +436,7 @@ public class Controller implements Initializable {
 
 
    // ----------------     AB HIER: Methoden speziell für BABYSTEPS || Aufgabengebiet: Eyyuep
+
 
    public void babyStepsHandling() {  // führt BabySteps aus
 
