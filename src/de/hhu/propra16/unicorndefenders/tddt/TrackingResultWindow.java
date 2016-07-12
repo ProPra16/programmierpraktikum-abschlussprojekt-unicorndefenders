@@ -2,6 +2,7 @@ package de.hhu.propra16.unicorndefenders.tddt;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -17,11 +18,16 @@ public class TrackingResultWindow extends Stage {
 
       setTitle("Tracking Result");
       Group root = new Group();
+      HBox hBox = new HBox();
+      Analyser analyser = new Analyser(Tracking_List);
       try {
-         root.getChildren().add(Analyser.analyse(Tracking_List));
+         analyser.toPieChart();
+         hBox.getChildren().add(analyser.getChart());
       } catch (Exception e) {
          System.out.println("Fehler");
       }
+
+      root.getChildren().add(hBox);
       Scene scene = new Scene(root);
       setScene(scene);
    }
