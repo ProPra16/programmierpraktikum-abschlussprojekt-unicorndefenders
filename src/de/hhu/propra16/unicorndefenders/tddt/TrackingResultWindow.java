@@ -2,7 +2,9 @@ package de.hhu.propra16.unicorndefenders.tddt;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -26,6 +28,14 @@ public class TrackingResultWindow extends Stage {
       } catch (Exception e) {
          System.out.println("Fehler");
       }
+
+      VBox vBox = new VBox();
+      TextArea code = new TextArea();
+      TextArea test = new TextArea();
+
+      vBox.getChildren().add(code);
+      vBox.getChildren().add(test);
+      hBox.getChildren().add(vBox);
 
       root.getChildren().add(hBox);
       Scene scene = new Scene(root);
