@@ -24,7 +24,6 @@ import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
 
 import de.hhu.propra16.unicorndefenders.tddt.files.File;
-import javafx.scene.shape.Shape;
 
 /*
    @author Sebastian
@@ -32,14 +31,14 @@ import javafx.scene.shape.Shape;
 
 public class Analyser {
 
-   private Pane chart;
+   public Group chart= new Group();
    private ArrayList<TrackPoint> trackPoints;
    public TextArea code = new TextArea();
    public TextArea test = new TextArea();
    public String temp_code="";
    public String temp_test="";
 
-   public Pane getChart() {
+   public Group getChart() {
       return this.chart;
    }
 
@@ -54,19 +53,18 @@ public class Analyser {
       for (TrackPoint i : this.trackPoints) {
          gesamtzeit += i.getTime();
       }
-      Group root = new Group();
-      Pane canvas = new Pane();
+
+      this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
       for (TrackPoint i : this.trackPoints) {
 
-         //Shape arc = new Arc(50, 50, 300, 300, 360 * temp / gesamtzeit, 10);
          Arc arc = new Arc();
          arc.setCenterX(100.0);
          arc.setCenterY(100.0);
          arc.setRadiusX(75.0);
          arc.setRadiusY(75.0);
          arc.setStartAngle(360 * temp / gesamtzeit);
-         arc.setLength(360 * (i.getTime() - temp) / gesamtzeit);
+         arc.setLength(360 * i.getTime() / gesamtzeit);
          arc.setType(ArcType.ROUND);
          arc.setFill(getColor(i));
 
@@ -97,16 +95,65 @@ public class Analyser {
                this.test.setText(this.temp_test);
             }
          });
-         canvas.getChildren().add(arc);
+         this.chart.getChildren().add(arc);
          temp += i.getTime();
          j++;
-
+         System.out.println(temp);
       }
 
-      root.getChildren().add(canvas);
-      this.chart = canvas;
    }
 
+   public void toBar() throws Exception {
+      long gesamtzeit = 0;
+      int j = 0;
+      int length=500;
+      for (TrackPoint i : this.trackPoints) {
+         gesamtzeit += i.getTime();
+      }
+      this.chart.getChildren().add(new Rectangle());
+      this.chart.getChildren().remove(0, this.chart.getChildren().size());
+      int temp = 0;
+      for (TrackPoint i : this.trackPoints) {
+
+         Rectangle rectangle = new Rectangle();
+         rectangle.setFill(getColor(i));
+         rectangle.setX(25);
+         rectangle.setY(length*temp/gesamtzeit);
+         rectangle.setHeight(length*i.getTime()/gesamtzeit);
+         rectangle.setWidth(20);
+
+         rectangle.setOnMouseClicked(event -> {
+            if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+               this.temp_code=i.getCode().getContent();
+               this.temp_test=i.getTest().getContent();
+               this.code.setText(i.getCode().getContent());
+               this.test.setText(i.getTest().getContent());
+            }
+         });
+
+         rectangle.setOnMouseEntered(event -> {
+
+            if(event.getEventType().equals(MouseEvent.MOUSE_ENTERED)) {
+               this.temp_code=this.code.getText();
+               this.temp_test=this.test.getText();
+               this.code.setText(i.getCode().getContent());
+               this.test.setText(i.getTest().getContent());
+            }
+
+         });
+
+         rectangle.setOnMouseExited(event -> {
+
+            if(event.getEventType().equals(MouseEvent.MOUSE_EXITED)) {
+               this.code.setText(this.temp_code);
+               this.test.setText(this.temp_test);
+            }
+         });
+         this.chart.getChildren().add(rectangle);
+         temp += i.getTime();
+         j++;
+      }
+   }
 
    public Color getColor(TrackPoint trackpoint) {
       if (trackpoint.getCycle() == RED) return Color.RED;
