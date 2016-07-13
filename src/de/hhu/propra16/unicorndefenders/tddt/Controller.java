@@ -160,8 +160,13 @@ public class Controller implements Initializable {
                   List<File> codeList = selectedExcercise.getClassTemplate();
                   List<File> testList = selectedExcercise.getTestTemplate();
 
+                  // Aufgabenstellung als Kommentar oben ins Textfeld schreiben
+                  String  codeAreaText = "";
+                  if(!selectedExcercise.getDescription().isEmpty()) {
+                     codeAreaText = "/*" + selectedExcercise.getDescription() + "*/\n\n";
+                  }
+                  codeArea.setText(codeAreaText+codeList.get(0).getContent());
 
-                  codeArea.setText(codeList.get(0).getContent());
                   testArea.setText(testList.get(0).getContent());
 
                   status.setText("RED");
@@ -442,6 +447,8 @@ public class Controller implements Initializable {
     * Oeffnet neues Fenster mit entsprechenden Tracking-Diagrammen
     */
    public void startTracking(Event event) {
+      TrackingResultWindow trackResult = new TrackingResultWindow(trackList);
+      trackResult.show();
    }
 
 
