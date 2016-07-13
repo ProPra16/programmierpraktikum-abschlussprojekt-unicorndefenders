@@ -4,6 +4,8 @@ import de.hhu.propra16.unicorndefenders.tddt.config.Catalog;
 import de.hhu.propra16.unicorndefenders.tddt.config.ConfigParser;
 import de.hhu.propra16.unicorndefenders.tddt.config.Exercise;
 import de.hhu.propra16.unicorndefenders.tddt.files.*;
+import de.hhu.propra16.unicorndefenders.tddt.files.File;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -13,14 +15,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import org.xml.sax.SAXException;
 import vk.core.api.CompileError;
 import vk.core.api.TestFailure;
 import vk.core.api.TestResult;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -90,22 +92,15 @@ public class Controller implements Initializable {
    // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
    static boolean successfullCompiling=false;
 
+   private String configFilePath;
 
 
-   /*
-    * Wird bei Programmaufruf ausgefuehrt:
-    * - Lässt Katalog parsen und baut Auswahlmenuleiste mit entsprechenden Aufgaben
-    */
-   @Override
-   public void initialize(URL location, ResourceBundle resources) {
-
-      // Erste Phase: Test editieren
-      cycle = RED;
-
+   private void initMenu() {
       // initialer Menuaufbau
       try{
          // Parsen
-         FilesystemFile catalogFile = new FilesystemFile("test.xml");
+         //FilesystemFile catalogFile = new FilesystemFile("test.xml");
+         FilesystemFile catalogFile = new FilesystemFile(configFilePath);
          ConfigParser configParser= new ConfigParser(catalogFile);
          configParser.parse();
 
@@ -190,14 +185,43 @@ public class Controller implements Initializable {
             }
             taskMenu.getSelectionModel().clearSelection();
 
-
          }
-
       });
+   }
 
+   /**
+    * Fordert den Benutzer dazu auf eine Konfigurationsdatei zu waehlen.
+    */
+   private void chooseFile() {
+      java.io.File file = null;
 
+      // Solange den Dialog anzeigen, bis eine Datei gewaehlt wurde
+      do {
+         FileChooser fileChooser = new FileChooser();
+         fileChooser.setTitle("Open Resource File");
+         fileChooser.getExtensionFilters().addAll(
+                 new FileChooser.ExtensionFilter("XML-Dateien", "*.xml"));
 
+         file = fileChooser.showOpenDialog(codeArea.getScene().getWindow());
+      } while (file == null);
+      configFilePath = file.getAbsolutePath();
 
+      // Menu anhand der gewaehlten Konfiguration aufbauen
+      initMenu();
+   }
+
+   /*
+    * Wird bei Programmaufruf ausgefuehrt:
+    * - Lässt Katalog parsen und baut Auswahlmenuleiste mit entsprechenden Aufgaben
+    */
+   @Override
+   public void initialize(URL location, ResourceBundle resources) {
+      // Erste Phase: Test editieren
+      cycle = RED;
+
+      // Fordere zur Eingabe der Konfigurationsdatei auf, wenn das Fenster
+      // fertig initialisiert ist.
+      Platform.runLater(this::chooseFile);
    }
 
 
