@@ -1,13 +1,22 @@
 package de.hhu.propra16.unicorndefenders.tddt;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
+
 import java.util.ArrayList;
 
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
@@ -23,15 +32,18 @@ public class Analyser {
 
    private Pane chart;
    private ArrayList<TrackPoint> trackPoints;
-   private File code;
-   private File test;
+   public TextArea code= new TextArea();
+   public TextArea test= new TextArea();
 
    public Pane getChart() {
       return this.chart;
    }
 
+
    public Analyser(ArrayList<TrackPoint> trackPoints){
       this.trackPoints=trackPoints;
+      this.code=code;
+      this.test=test;
    }
 
    public void toPieChart() throws Exception {
@@ -55,6 +67,15 @@ public class Analyser {
          arc.setLength(360 * (i.getTime()-temp) / gesamtzeit);
          arc.setType(ArcType.ROUND);
          arc.setFill(getColor(i));
+         TextArea code2 = new TextArea();
+         TextArea test2 = new TextArea();
+
+         arc.setOnMouseClicked(event -> {
+            if (event.getClickCount() >= 1) {
+               this.code.setText(i.getCode().getContent());
+               this.test.setText(i.getTest().getContent());
+            }
+         });
          canvas.getChildren().add(arc);
          temp += i.getTime();
          j++;
@@ -72,8 +93,6 @@ public class Analyser {
       return Color.BLACK;
    }
 
-   private void changeFiles(TrackPoint trackpoint) {
-      this.code=trackpoint.getCode();
-      this.test=trackpoint.getTest();
-   }
+
+
 }
