@@ -57,6 +57,8 @@ public class Controller implements Initializable {
    @FXML
    Button tracking;
    @FXML
+   Button babystepsHighscore;
+   @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
@@ -171,6 +173,7 @@ public class Controller implements Initializable {
                   compile.setDisable(false);
                   next.setDisable(false);
                   tracking.setDisable(false);
+                  babystepsHighscore.setDisable(false);
 
                   // neue Aufgabe angefangen, also werden die Zeiten der alten Aufgabe geloescht
                   trackList = new ArrayList<TrackPoint>();
@@ -473,6 +476,11 @@ public class Controller implements Initializable {
    public void startTracking(Event event) {
       TrackingResultWindow trackResult = new TrackingResultWindow(trackList);
       trackResult.show();
+   }
+
+
+   public void showHighscore(Event event){
+
    }
 
 
