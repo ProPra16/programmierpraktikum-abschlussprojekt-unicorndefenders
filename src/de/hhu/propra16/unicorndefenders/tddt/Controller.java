@@ -2,6 +2,7 @@ package de.hhu.propra16.unicorndefenders.tddt;
 
 import de.hhu.propra16.unicorndefenders.tddt.config.Catalog;
 import de.hhu.propra16.unicorndefenders.tddt.config.ConfigParser;
+import de.hhu.propra16.unicorndefenders.tddt.config.ConfigParserException;
 import de.hhu.propra16.unicorndefenders.tddt.config.Exercise;
 import de.hhu.propra16.unicorndefenders.tddt.files.*;
 import de.hhu.propra16.unicorndefenders.tddt.files.File;
@@ -119,7 +120,7 @@ public class Controller implements Initializable {
             else
                taskMenuData.add(new MenuEntry(e.getName(), "Nein", e));
          }
-      } catch (ParserConfigurationException | SAXException e) {
+      } catch (ParserConfigurationException | SAXException | ConfigParserException e) {
          Alert alert = new Alert(Alert.AlertType.ERROR);
          alert.setTitle("Schade");
          alert.setHeaderText("Der Katalog entspricht nicht dem Format :(");
