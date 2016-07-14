@@ -128,7 +128,10 @@ public class Analyser {
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
       for (TrackPoint i : this.trackPoints) {
-
+         Text text = new Text(""+temp);
+         text.setX(50);
+         text.setY(length*temp/gesamtzeit);
+         this.chart.getChildren().add(text);
          Rectangle rectangle = new Rectangle();
          rectangle.setFill(getColor(i));
          rectangle.setX(25);
@@ -167,7 +170,12 @@ public class Analyser {
          this.chart.getChildren().add(rectangle);
 
          temp += i.getTime();
-
+         if(temp==gesamtzeit) {
+            Text text2 = new Text(""+gesamtzeit);
+            text2.setX(50);
+            text2.setY(length);
+            this.chart.getChildren().add(text2);
+         }
 
          j++;
       }
