@@ -314,6 +314,9 @@ public class Controller implements Initializable {
     */
    public void next(){
 
+      // beende zuvor laufende Threads, um zeitliche Verzögerungen zu beseitigen
+      BabyStepsConfig.stopThread=true;
+
       compileCode();
 
       // Je nach laufender Phase muss anders reagiert werden.
