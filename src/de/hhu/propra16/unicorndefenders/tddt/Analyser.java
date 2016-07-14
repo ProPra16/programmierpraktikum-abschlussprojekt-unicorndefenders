@@ -24,6 +24,7 @@ import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
 
 import de.hhu.propra16.unicorndefenders.tddt.files.File;
+import javafx.scene.text.Text;
 
 /*
    @author Sebastian
@@ -57,7 +58,10 @@ public class Analyser {
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
       for (TrackPoint i : this.trackPoints) {
-
+         Text text = new Text(""+temp);
+         text.setX(100+90*Math.cos(2*Math.PI*temp / gesamtzeit));
+         text.setY(100-90*Math.sin(2*Math.PI*temp/gesamtzeit));
+         this.chart.getChildren().add(text);
          Arc arc = new Arc();
          arc.setCenterX(100.0);
          arc.setCenterY(100.0);
@@ -96,9 +100,19 @@ public class Analyser {
             }
          });
          this.chart.getChildren().add(arc);
+
          temp += i.getTime();
+
+         if(temp==gesamtzeit) {
+            Text text2 = new Text(""+gesamtzeit);
+            text2.setX(180);
+            text2.setY(112);
+            this.chart.getChildren().add(text2);
+         }
+
+
+
          j++;
-         System.out.println(temp);
       }
 
    }
@@ -114,7 +128,10 @@ public class Analyser {
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
       for (TrackPoint i : this.trackPoints) {
-
+         Text text = new Text(""+temp);
+         text.setX(50);
+         text.setY(length*temp/gesamtzeit);
+         this.chart.getChildren().add(text);
          Rectangle rectangle = new Rectangle();
          rectangle.setFill(getColor(i));
          rectangle.setX(25);
@@ -149,8 +166,17 @@ public class Analyser {
                this.test.setText(this.temp_test);
             }
          });
+
          this.chart.getChildren().add(rectangle);
+
          temp += i.getTime();
+         if(temp==gesamtzeit) {
+            Text text2 = new Text(""+gesamtzeit);
+            text2.setX(50);
+            text2.setY(length);
+            this.chart.getChildren().add(text2);
+         }
+
          j++;
       }
    }

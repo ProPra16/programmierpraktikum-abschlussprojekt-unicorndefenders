@@ -79,6 +79,8 @@ public class Controller implements Initializable {
     */
 
    @FXML
+   Button babyStepsHighscore;         // Button für die Highscore-Option von BabySteps
+   @FXML
    Label babyStepsTimer;              // Timer-Label in der FXML-Datei
 
    static boolean isBabyStepsEnabled;
@@ -250,9 +252,6 @@ public class Controller implements Initializable {
          if (compilerManager.wasCompilerSuccessfull()) {
             message = "Compiling: Successful! :)\n";
 
-            // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
-            successfullCompiling = true;
-
          } else {
 
             message = "Compiling: Not so successful! :(\n";
@@ -297,7 +296,11 @@ public class Controller implements Initializable {
       // Je nach laufender Phase muss anders reagiert werden.
       if (cycle == GREEN) {
          if (compilerManager.wasTestSuccessfull()) {
-            // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
+
+             // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
+             successfullCompiling = true;
+
+             // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
             // Frage dies ueber ein Alert ab
             Alert checkRefactor = new Alert(Alert.AlertType.CONFIRMATION);
             checkRefactor.setContentText("In den Modus REFACTOR wechseln?");
@@ -482,8 +485,10 @@ public class Controller implements Initializable {
    }
 
 
-   public void showHighscore(Event event){
+   // aktiviert die Highscore-Option für BabySteps
 
+   public void showHighscore(Event event){
+      //BabyStepsHighscores.highscores();
    }
 
 
