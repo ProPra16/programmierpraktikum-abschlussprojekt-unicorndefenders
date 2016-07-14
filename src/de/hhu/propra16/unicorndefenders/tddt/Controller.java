@@ -96,6 +96,9 @@ public class Controller implements Initializable {
    // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
    static boolean successfullCompiling=false;
 
+   // zur Überprüfung des Erreichens der 3.GREEN-Phase
+   static int highscoreziel=0;
+
    private String configFilePath;
 
 
@@ -157,6 +160,23 @@ public class Controller implements Initializable {
 
                   isBabyStepsEnabled = selectedExcercise.isBabystepsEnabled();
                   babyStepsTimeinSeconds = selectedExcercise.getBabystepsMaxTimeInSeconds();
+
+
+                  // wenn die BabySteps-Funnktion eingeschaltet ist, lasse die Highscore-Option zu
+                  // lasse ansonsten keinen Knopfdruck zu
+                  if(isBabyStepsEnabled){
+
+                     // für jede Aufgabe ist einzeln zu prüfen, ob das Highscoreziel (3mal Phase grün erreicht, also 2 zyklen vollendet) erreicht wurde
+                     // nur dann wird ein Highscore-Eintrag erzeugt
+                     // bei Wahl einer neuen Aufgabe deshalb auf 0 gesetzt
+                     highscoreziel=0;
+                     babyStepsHighscore.setDisable(false);
+                     BabyStepsHighscore.createFile(selectedExcercise.getName());
+                     BabyStepsHighscore.aufgabe=selectedExcercise.getName();
+                  }
+                  else{
+                     babyStepsHighscore.setDisable(true);
+                  }
 
 
                   List<File> codeList = selectedExcercise.getClassTemplate();
@@ -354,6 +374,7 @@ public class Controller implements Initializable {
             File code = new File("Code", codeArea.getText());
             File test = new File("Test", testArea.getText());
             trackList.add(new TrackPoint(StoppUhr.zeit(), RED, code, test));
+            highscoreziel++;  //bei jedem erfolgreichen Wechsel in die GREEN-Phase inkrementiert
             initGreenMode();
          } else {
             String msg = compilerMessages.getText();
@@ -496,6 +517,18 @@ public class Controller implements Initializable {
    // ----------------     AB HIER: Methoden speziell für BABYSTEPS || Aufgabengebiet: Eyyuep
 
 
+
+   // wenn drei mal die GREEN-Phase erreicht wurde, gehe in die Highscore-Stage über, sonst passiert nichts
+
+   public void showHighscore(Event event) {
+      if(highscoreziel==3) BabyStepsHighscore.handling();
+      BabyStepsHighscoreStage highscores=new BabyStepsHighscoreStage(BabyStepsHighscore.highscorestrings);
+      highscores.setTitle("BabySteps-TopFive zu "+BabyStepsHighscore.aufgabe);
+      highscores.show();
+      highscoreziel=0;  // danach nicht mehr möglich
+   }
+
+
    public void babyStepsHandling() {  // führt BabySteps aus
 
       // etwaigen vorigen Thread aus der count-Methode in BabyStepsConfig.java stoppen, damit dieser nicht weiterläuft
@@ -587,7 +620,7 @@ public class Controller implements Initializable {
          if(babyStepsTimer.getText().equals("0:00")){
             Platform.runLater( () ->next());
          }
-         
+
       });
 
       t.start();  // Starte den Thread t
