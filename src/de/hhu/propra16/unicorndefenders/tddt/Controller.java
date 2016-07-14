@@ -57,8 +57,6 @@ public class Controller implements Initializable {
    @FXML
    Button tracking;
    @FXML
-   Button babystepsHighscore;
-   @FXML
    TableView<MenuEntry> taskMenu;
    ObservableList<MenuEntry> taskMenuData = FXCollections.observableArrayList();
 
@@ -79,7 +77,7 @@ public class Controller implements Initializable {
     */
 
    @FXML
-   Button babyStepsHighscore;         // Button für die Highscore-Option von BabySteps
+   Button babystepsHighscore;       // Button für die Highscore-Option von BabySteps
    @FXML
    Label babyStepsTimer;              // Timer-Label in der FXML-Datei
 
@@ -161,8 +159,8 @@ public class Controller implements Initializable {
                   isBabyStepsEnabled = selectedExcercise.isBabystepsEnabled();
                   babyStepsTimeinSeconds = selectedExcercise.getBabystepsMaxTimeInSeconds();
 
-                  // TODO : FEHLERBEHANDLUNG : NullPointerException
-                  /*
+
+
                   // wenn die BabySteps-Funnktion eingeschaltet ist, lasse die Highscore-Option zu
                   // lasse ansonsten keinen Knopfdruck zu
                   if(isBabyStepsEnabled){
@@ -171,15 +169,15 @@ public class Controller implements Initializable {
                      // nur dann wird ein Highscore-Eintrag erzeugt
                      // bei Wahl einer neuen Aufgabe deshalb auf 0 gesetzt
                      highscoreziel=0;
-                     babyStepsHighscore.setDisable(false);
+                     babystepsHighscore.setDisable(false);
                      BabyStepsHighscore.createFile(selectedExcercise.getName());
                      BabyStepsHighscore.aufgabe=selectedExcercise.getName();
                   }
                   else{
-                     babyStepsHighscore.setDisable(true);
+                     babystepsHighscore.setDisable(true);
                   }
 
-                  */
+
 
                   List<File> codeList = selectedExcercise.getClassTemplate();
                   List<File> testList = selectedExcercise.getTestTemplate();
@@ -518,11 +516,13 @@ public class Controller implements Initializable {
    // wenn drei mal die GREEN-Phase erreicht wurde, gehe in die Highscore-Stage über, sonst passiert nichts
 
    public void showHighscore(Event event) {
-      if(highscoreziel==3) BabyStepsHighscore.handling();
-      BabyStepsHighscoreStage highscores=new BabyStepsHighscoreStage(BabyStepsHighscore.highscorestrings);
-      highscores.setTitle("BabySteps-TopFive zu "+BabyStepsHighscore.aufgabe);
-      highscores.show();
-      highscoreziel=0;  // danach nicht mehr möglich
+      if(highscoreziel==3) {
+          BabyStepsHighscore.handling();
+          BabyStepsHighscoreStage highscores = new BabyStepsHighscoreStage(BabyStepsHighscore.highscorestrings);
+          highscores.setTitle("BabySteps-TopFive zu " + BabyStepsHighscore.aufgabe);
+          highscores.show();
+          highscoreziel = 0;  // danach nicht mehr möglich
+      }
    }
 
 
