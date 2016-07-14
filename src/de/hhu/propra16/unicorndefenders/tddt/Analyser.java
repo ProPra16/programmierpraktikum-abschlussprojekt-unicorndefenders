@@ -27,7 +27,11 @@ import de.hhu.propra16.unicorndefenders.tddt.files.File;
 import javafx.scene.text.Text;
 
 /*
-   @author Sebastian
+  * @author Sebastian
+  *
+  * In diesem Objekt wird sowohl das angezeigte Chart,
+  * als auch die angezeigten Textfelder gespeichert.
+  *
  */
 
 public class Analyser {
@@ -48,6 +52,11 @@ public class Analyser {
       this.trackPoints = trackPoints;
    }
 
+   /*
+   * Die Methode toPieChart() ändert das angezeigte Diagramm
+   * zu einem Kreisdiagramm
+    */
+
    public void toPieChart() throws Exception {
       long gesamtzeit = 0;
       int j = 0;
@@ -58,10 +67,13 @@ public class Analyser {
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
       for (TrackPoint i : this.trackPoints) {
+         //Bildet die Dauer einer Phase ab
          Text text = new Text(""+temp);
          text.setX(100+90*Math.cos(2*Math.PI*temp / gesamtzeit));
          text.setY(100-90*Math.sin(2*Math.PI*temp/gesamtzeit));
          this.chart.getChildren().add(text);
+
+         //Erstellt ein Kreissegment
          Arc arc = new Arc();
          arc.setCenterX(100.0);
          arc.setCenterY(100.0);
@@ -72,6 +84,23 @@ public class Analyser {
          arc.setType(ArcType.ROUND);
          arc.setFill(getColor(i));
 
+         //Trennt zwei Phasen durch eine Linie voneinander
+         Line line = new Line();
+         line.setStartX(100);
+         line.setStartY(100);
+         line.setEndX(100+75*Math.cos(2*Math.PI*temp / gesamtzeit));
+         line.setEndY(100-75*Math.sin(2*Math.PI*temp/gesamtzeit));
+         line.setFill(Color.BLACK);
+         this.chart.getChildren().add(line);
+
+         /*
+         * Wenn auf die Phase geklickt wird,
+         * wird der Inhalt derTextfelder durch den Code/Test
+         * der jeweiligen Phase überschrieben
+         *
+         * Diese TextFelder werden im TrackingResultwindow geladen
+         */
+
          arc.setOnMouseClicked(event -> {
             if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
                this.temp_code=i.getCode().getContent();
@@ -80,6 +109,11 @@ public class Analyser {
                this.test.setText(i.getTest().getContent());
             }
          });
+
+         /*
+         * Wenn der Mauscursor in die Phase eintritt, wird der
+         * Inhalt des Textfeldes temporär geändert
+          */
 
          arc.setOnMouseEntered(event -> {
 
@@ -91,6 +125,12 @@ public class Analyser {
             }
 
          });
+
+         /*
+         * Wenn der Mauscursor die Phase verlässt,
+         * wird der Inhalt des Textfeldes auf den
+         * ursprünglichen Zustand zurückgesetzt.
+          */
 
          arc.setOnMouseExited(event -> {
 
@@ -110,12 +150,15 @@ public class Analyser {
             this.chart.getChildren().add(text2);
          }
 
-
-
          j++;
       }
 
    }
+
+   /*
+   * Die Methode toBar() ändert das angezeigte Diagramm
+    * zu einer Leiste, in der alle Phasen angezeigt werden.
+    */
 
    public void toBar() throws Exception {
       long gesamtzeit = 0;
@@ -128,16 +171,36 @@ public class Analyser {
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
       for (TrackPoint i : this.trackPoints) {
+         //Bildet die Dauer einer Phase ab
          Text text = new Text(""+temp);
          text.setX(50);
          text.setY(length*temp/gesamtzeit);
          this.chart.getChildren().add(text);
+
+         //Erstellt ein Rechteck
          Rectangle rectangle = new Rectangle();
          rectangle.setFill(getColor(i));
          rectangle.setX(25);
          rectangle.setY(length*temp/gesamtzeit);
          rectangle.setHeight(length*i.getTime()/gesamtzeit);
          rectangle.setWidth(20);
+
+         //Trennt zwei Phasen durch eine Linie voneinander
+         Line line = new Line();
+         line.setStartX(25);
+         line.setStartY(length*temp/gesamtzeit);
+         line.setEndX(45);
+         line.setEndY(length*temp/gesamtzeit);
+         line.setFill(Color.BLACK);
+         this.chart.getChildren().add(line);
+
+         /*
+         * Wenn auf die Phase geklickt wird,
+         * wird der Inhalt derTextfelder durch den Code/Test
+         * der jeweiligen Phase überschrieben
+         *
+         * Diese TextFelder werden im TrackingResultwindow geladen
+         */
 
          rectangle.setOnMouseClicked(event -> {
             if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
@@ -147,6 +210,11 @@ public class Analyser {
                this.test.setText(i.getTest().getContent());
             }
          });
+
+         /*
+         * Wenn der Mauscursor in die Phase eintritt, wird der
+         * Inhalt des Textfeldes temporär geändert
+          */
 
          rectangle.setOnMouseEntered(event -> {
 
@@ -158,6 +226,12 @@ public class Analyser {
             }
 
          });
+
+         /*
+         * Wenn der Mauscursor die Phase verlässt,
+         * wird der Inhalt des Textfeldes auf den
+         * ursprünglichen Zustand zurückgesetzt.
+          */
 
          rectangle.setOnMouseExited(event -> {
 
@@ -180,6 +254,10 @@ public class Analyser {
          j++;
       }
    }
+
+   /*
+   * Gibt zu einer Phase die entsprechende Farbe als Color zurück
+   */
 
    public Color getColor(TrackPoint trackpoint) {
       if (trackpoint.getCycle() == RED) return Color.RED;
