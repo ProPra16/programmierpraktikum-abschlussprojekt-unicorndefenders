@@ -506,11 +506,6 @@ public class Controller implements Initializable {
    }
 
 
-   // aktiviert die Highscore-Option für BabySteps
-
-   public void showHighscore(Event event){
-      //BabyStepsHighscores.highscores();
-   }
 
 
 
