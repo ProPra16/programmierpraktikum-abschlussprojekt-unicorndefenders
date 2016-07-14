@@ -583,11 +583,11 @@ public class Controller implements Initializable {
          }
 
          // wenn die Zeit abgelaufen ist, wird über next() in die Phase zuvor gewechselt
-         // So kann man es machen, wechselt aber nur einmal:
-         /*
+
          if(babyStepsTimer.getText().equals("0:00")){
             Platform.runLater( () ->next());
-         }*/
+         }
+         
       });
 
       t.start();  // Starte den Thread t
