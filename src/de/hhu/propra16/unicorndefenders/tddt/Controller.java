@@ -126,6 +126,7 @@ public class Controller implements Initializable {
          alert.setHeaderText("Der Katalog entspricht nicht dem Format :(");
          alert.setContentText(e.getMessage());
          alert.showAndWait();
+         chooseFile();
       } catch (FileNotFoundException e ){
          Alert alert = new Alert(Alert.AlertType.ERROR);
          alert.setTitle("Schade");
