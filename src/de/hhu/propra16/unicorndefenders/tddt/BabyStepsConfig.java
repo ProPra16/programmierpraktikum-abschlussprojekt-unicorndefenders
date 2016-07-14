@@ -36,6 +36,8 @@ public class BabyStepsConfig{
 
    public static void count(Label label){   // zählt die Zeit des Timer-Labels runter
 
+      BabyStepsStoppUhr.starten();     // Zeitmessung für die Highscores
+
       Thread t = new Thread(() -> {         // damit parallel Aktionen möglich sind, neuen Thread erstellen
 
 
@@ -84,6 +86,7 @@ public class BabyStepsConfig{
          // denn wenn dies der Fall ist, wird auch ein Thread im Controller beendet
          Controller.finished=true;
 
+         BabyStepsStoppUhr.beenden();  //Zeitmessung für die Highscores
 
       });
 
