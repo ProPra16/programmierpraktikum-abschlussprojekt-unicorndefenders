@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<exercises>
+
+   <exercise name="Fibonacci-Folge">
+      <description>
+         Schreiben Sie eine Funktion, welche die
+         n-te Fibonacci-Zahl zurueckgibt.
+      </description>
+
+      <classes>
+         <class name="Fibonacci">
+public class Fibonacci {
+   // Hier der Code
+}
+         </class>
+      </classes>
+
+      <tests>
+         <test name="FibonacciTest">
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+public class FibonacciTest {
+   // Hier die Tests
+}
+         </test>
+      </tests>
+
+      <config>
+         <!-- Babysteps mit 2 Minuten Zeit -->
+         <babysteps enable="true" time="120"/>
+      </config>
+   </exercise>
+
+
+   <exercise name="3x3 Determinante">
+      <description>
+         Schreiben Sie eine Funktion, welche die Determinante
+         einer 3x3 Matrix zurueckiefert.
+      </description>
+      <classes>
+         <class name="Determinant">
+public class Determinant {
+   // Hier der Code
+}
+         </class>
+      </classes>
+
+      <tests>
+         <test name="DeterminantTest">
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+public class DeterminantTest {
+   // Hier die Tests
+}
+         </test>
+      </tests>
+
+      <config>
+         <!-- Babysteps deaktiviert -->
+         <babysteps enable="false" />
+      </config>
+
+   </exercise>
+
+</exercises>
+
