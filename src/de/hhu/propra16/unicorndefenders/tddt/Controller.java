@@ -196,6 +196,7 @@ public class Controller implements Initializable {
                   status.setText("RED");
                   testArea.setEditable(true);
                   codeArea.setEditable(false);
+                  codeArea.setStyle("-fx-border-color: #A4A4A4;");
                   testArea.setStyle("-fx-border-color: #DF0101;");
                   compile.setDisable(false);
                   next.setDisable(false);
