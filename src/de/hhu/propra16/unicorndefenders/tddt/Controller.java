@@ -161,7 +161,8 @@ public class Controller implements Initializable {
                   isBabyStepsEnabled = selectedExcercise.isBabystepsEnabled();
                   babyStepsTimeinSeconds = selectedExcercise.getBabystepsMaxTimeInSeconds();
 
-
+                  // TODO : FEHLERBEHANDLUNG : NullPointerException
+                  /*
                   // wenn die BabySteps-Funnktion eingeschaltet ist, lasse die Highscore-Option zu
                   // lasse ansonsten keinen Knopfdruck zu
                   if(isBabyStepsEnabled){
@@ -178,6 +179,7 @@ public class Controller implements Initializable {
                      babyStepsHighscore.setDisable(true);
                   }
 
+                  */
 
                   List<File> codeList = selectedExcercise.getClassTemplate();
                   List<File> testList = selectedExcercise.getTestTemplate();
