@@ -116,16 +116,19 @@ public class Controller implements Initializable {
             else
                taskMenuData.add(new MenuEntry(e.getName(), "Nein", e));
          }
-      }catch (FileNotFoundException e){
+      } catch (ParserConfigurationException | SAXException e) {
+         Alert alert = new Alert(Alert.AlertType.ERROR);
+         alert.setTitle("Schade");
+         alert.setHeaderText("Der Katalog entspricht nicht dem Format :(");
+         alert.setContentText(e.getMessage());
+         alert.showAndWait();
+      } catch (FileNotFoundException e ){
          Alert alert = new Alert(Alert.AlertType.ERROR);
          alert.setTitle("Schade");
          alert.setContentText("Der Katalog wurde nicht gefunden :(");
+         System.out.println(e.getMessage());
          alert.showAndWait();
-      } catch (SAXException e) {
-         e.printStackTrace();
-      } catch (ParserConfigurationException e) {
-         e.printStackTrace();
-      } catch (IOException e) {
+      }  catch (IOException e) {
          e.printStackTrace();
       } catch (Exception e) {
          e.printStackTrace();
