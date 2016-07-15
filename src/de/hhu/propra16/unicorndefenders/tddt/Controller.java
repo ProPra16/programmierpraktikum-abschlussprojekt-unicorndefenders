@@ -228,8 +228,9 @@ public class Controller implements Initializable {
 
       // Solange den Dialog anzeigen, bis eine Datei gewaehlt wurde
       do {
+         // Basierend auf https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html
          FileChooser fileChooser = new FileChooser();
-         fileChooser.setTitle("Open Resource File");
+         fileChooser.setTitle("Wählen Sie einen Aufgabenkatalog");
          fileChooser.getExtensionFilters().addAll(
                  new FileChooser.ExtensionFilter("XML-Dateien", "*.xml"));
 
