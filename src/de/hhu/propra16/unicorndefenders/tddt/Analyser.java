@@ -269,7 +269,7 @@ public class Analyser {
          }
          if(i.getCycle()==RED&&!first_time&&green) {
             phasen.add(temp_list);
-            for(TrackPoint z:temp_list)temp_list.remove(0);
+            temp_list.clear();
             green=false;
          }
          if(i.getCycle()==GREEN) {
@@ -279,8 +279,10 @@ public class Analyser {
       }
       phasen.add(temp_list);
       for(ArrayList<TrackPoint> i:phasen) {
+         System.out.println("n");
          long temp_zeit=0;
          for(TrackPoint j:i) {
+            System.out.println("1");
             temp_zeit+=j.getTime();
          }
          if(temp_zeit>maxzeit) maxzeit=temp_zeit;
