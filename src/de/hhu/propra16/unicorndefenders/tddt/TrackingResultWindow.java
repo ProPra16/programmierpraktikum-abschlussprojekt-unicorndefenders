@@ -71,11 +71,11 @@ public class TrackingResultWindow extends Stage {
       vBox_left.getChildren().add(hBox_in_leftVBox);
       vBox_left.getChildren().add(analyser.chart);
 
-      VBox vBox = new VBox();
-      vBox.getChildren().add(analyser.code);
-      vBox.getChildren().add(analyser.test);
       hBox.getChildren().add(vBox_left);
-      hBox.getChildren().add(vBox);
+      hBox.getChildren().add(analyser.code);
+      hBox.getChildren().add(analyser.test);
+
+
 
       root.getChildren().add(hBox);
       Scene scene = new Scene(root);

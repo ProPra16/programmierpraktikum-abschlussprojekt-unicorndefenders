@@ -40,6 +40,7 @@ public class Analyser {
    public Group chart= new Group();
    private ArrayList<TrackPoint> trackPoints;
    public TextArea code = new TextArea();
+
    public TextArea test = new TextArea();
    public String temp_code="";
    public String temp_test="";
@@ -67,6 +68,10 @@ public class Analyser {
 
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
       int temp = 0;
+      Text leer= new Text("");
+      leer.setX(50);
+      leer.setY(450);
+      this.chart.getChildren().add(leer);
       for (TrackPoint i : this.trackPoints) {
          //Bildet die Dauer einer Phase ab
          Text text = new Text(""+temp);
@@ -297,6 +302,8 @@ public class Analyser {
       y_achse.setFill(Color.BLACK);
       y_achse.setStrokeWidth(2.5);
       this.chart.getChildren().add(y_achse);
+
+
 
       for(int x =0; x<10;x++) {
          Line y_achse_queerstrich = new Line();
