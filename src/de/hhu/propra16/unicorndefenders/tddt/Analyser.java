@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.GREEN;
 import static de.hhu.propra16.unicorndefenders.tddt.Cycle.RED;
+import static de.hhu.propra16.unicorndefenders.tddt.Cycle.REFACTOR;
 
 import de.hhu.propra16.unicorndefenders.tddt.files.File;
 import javafx.scene.text.Text;
@@ -261,13 +262,37 @@ public class Analyser {
       int length=500;
       ArrayList<ArrayList<TrackPoint>> phasen= new ArrayList<ArrayList<TrackPoint>>();
       ArrayList<TrackPoint> temp_list= new ArrayList<TrackPoint>();
-      boolean first_time=true;
-      boolean green=false;
-      for (TrackPoint i : this.trackPoints) {
-         if(i.getCycle()==RED&&first_time) {
-            first_time=false;
+      for(TrackPoint i:this.trackPoints) {
+         if(i.getCycle()==RED) {
+            phasen.add(temp_list);
+            temp_list= new ArrayList<TrackPoint>();
+            temp_list.add(i);
          }
-         if(i.getCycle()==RED&&!first_time&&green) {
+         else {
+            temp_list.add(i);
+         }
+      }
+      phasen.add(temp_list);
+
+
+/*  boolean green_first=false;
+    for(TrackPoint i:trackPoints) {
+         if(i.getCycle()==RED&&!green_first) temp_list.add(i);
+         if(i.getCycle() == GREEN) {
+            green_first=true;
+            temp_list.add(i);
+         }
+         if(green_first&&i.getCycle()==RED) break;
+         if(i.getCycle()==REFACTOR) temp_list.add(i);
+      }
+       phasen.add(temp_list);
+ */
+/*
+      temp_list.clear();
+      boolean green=false;
+      for (int j=0; j<this.trackPoints.size(); j++) {
+         TrackPoint i = this.trackPoints.get(j);
+         if(i.getCycle()==RED&&green) {
             phasen.add(temp_list);
             temp_list.clear();
             green=false;
@@ -276,13 +301,14 @@ public class Analyser {
             green=true;
          }
          temp_list.add(i);
+
       }
-      phasen.add(temp_list);
+//      phasen.add(temp_list);
+*/
       for(ArrayList<TrackPoint> i:phasen) {
-         System.out.println("n");
          long temp_zeit=0;
          for(TrackPoint j:i) {
-            System.out.println("1");
+            System.out.println(j.getTime());
             temp_zeit+=j.getTime();
          }
          if(temp_zeit>maxzeit) maxzeit=temp_zeit;
