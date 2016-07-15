@@ -259,7 +259,7 @@ public class Analyser {
    public void toBarChart() throws Exception {
       long maxzeit = 0;
       int k = 0;
-      int length=500;
+      int length=450;
       ArrayList<ArrayList<TrackPoint>> phasen= new ArrayList<ArrayList<TrackPoint>>();
       ArrayList<TrackPoint> temp_list= new ArrayList<TrackPoint>();
       for(TrackPoint i:this.trackPoints) {
@@ -275,40 +275,9 @@ public class Analyser {
       phasen.add(temp_list);
 
 
-/*  boolean green_first=false;
-    for(TrackPoint i:trackPoints) {
-         if(i.getCycle()==RED&&!green_first) temp_list.add(i);
-         if(i.getCycle() == GREEN) {
-            green_first=true;
-            temp_list.add(i);
-         }
-         if(green_first&&i.getCycle()==RED) break;
-         if(i.getCycle()==REFACTOR) temp_list.add(i);
-      }
-       phasen.add(temp_list);
- */
-/*
-      temp_list.clear();
-      boolean green=false;
-      for (int j=0; j<this.trackPoints.size(); j++) {
-         TrackPoint i = this.trackPoints.get(j);
-         if(i.getCycle()==RED&&green) {
-            phasen.add(temp_list);
-            temp_list.clear();
-            green=false;
-         }
-         if(i.getCycle()==GREEN) {
-            green=true;
-         }
-         temp_list.add(i);
-
-      }
-//      phasen.add(temp_list);
-*/
       for(ArrayList<TrackPoint> i:phasen) {
          long temp_zeit=0;
          for(TrackPoint j:i) {
-            System.out.println(j.getTime());
             temp_zeit+=j.getTime();
          }
          if(temp_zeit>maxzeit) maxzeit=temp_zeit;
@@ -407,6 +376,18 @@ public class Analyser {
             temp_zeit+=i.getTime();
          }
          k++;
+         /*
+         *Zeichnet die x-Achse des KoordinatenSystems
+          */
+         Line x_achse = new Line();
+         x_achse.setStartX((k-1)*50);
+         x_achse.setStartY(length+20);
+         x_achse.setEndX((k+1)*50);
+         x_achse.setEndY(length+20);
+         x_achse.setFill(Color.BLACK);
+         x_achse.setStrokeWidth(2.5);
+         this.chart.getChildren().add(x_achse);
+
       }
    }
 
