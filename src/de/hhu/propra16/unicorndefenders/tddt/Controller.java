@@ -619,10 +619,27 @@ public class Controller implements Initializable {
 
          }
 
-         // wenn die Zeit abgelaufen ist, wird über next() in die Phase zuvor gewechselt
+         // wenn die Zeit abgelaufen ist, wird in die Phase zuvor gewechselt
+         // und davor die jeweilige TextArea zurückgesetzt
 
          if(babyStepsTimer.getText().equals("0:00")){
-            Platform.runLater( () ->next());
+
+            //breche zuvor laufende Threads ab, um zeitliche Verzögerungen zu vermeiden
+            BabyStepsConfig.stopThread=true;
+
+            // Wechsle bei einem Abbruch in die vorige Phase
+
+            if(cycle==RED){
+
+               Platform.runLater(()->initGreenMode());
+
+            }
+            else if(cycle==GREEN){
+
+               Platform.runLater(()->initRedMode());
+
+            }
+
          }
 
       });
