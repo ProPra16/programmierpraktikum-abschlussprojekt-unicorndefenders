@@ -259,7 +259,7 @@ public class Analyser {
    public void toBarChart() throws Exception {
       long maxzeit = 0;
       int k = 1;
-      int length=450;
+      int length=400;
       ArrayList<ArrayList<TrackPoint>> phasen= new ArrayList<ArrayList<TrackPoint>>();
       ArrayList<TrackPoint> temp_list= new ArrayList<TrackPoint>();
       for(TrackPoint i:this.trackPoints) {
@@ -285,7 +285,10 @@ public class Analyser {
 
       this.chart.getChildren().add(new Rectangle());
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
-
+      Text x_achsen_beschriftung= new Text("T in s");
+      x_achsen_beschriftung.setX(50);
+      x_achsen_beschriftung.setY(0);
+      this.chart.getChildren().add(x_achsen_beschriftung);
       Line y_achse = new Line();
       y_achse.setStartX(50);
       y_achse.setStartY(length+20);
@@ -310,6 +313,7 @@ public class Analyser {
          long temp_zeit=0;
          for (TrackPoint i : j) {
             int temp = 0;
+
 
             /*
             //Bildet die Dauer eines Zyklusses ab
@@ -384,15 +388,7 @@ public class Analyser {
             });
 
             this.chart.getChildren().add(rectangle);
-/*
-            temp += i.getTime();
-            if (temp == maxzeit) {
-               Text text2 = new Text("" + maxzeit);
-               text2.setX(50);
-               text2.setY(length);
-               this.chart.getChildren().add(text2);
-            }
-*/
+
             temp_zeit+=i.getTime();
          }
          Line x_achse_abschnitt = new Line();
@@ -424,7 +420,18 @@ public class Analyser {
             text_phase.setY(length + 50);
             this.chart.getChildren().add(text_phase);
          }
+
+         if(temp_zeit!=0) {
+            Text text_time = new Text("" + temp_zeit);
+            text_time.setX(50 * (k - 1) + 15);
+            text_time.setY(0);
+            this.chart.getChildren().add(text_time);
+         }
       }
+      Text y_achsen_beschriftung = new Text("Phase");
+      y_achsen_beschriftung.setX(50*k);
+      y_achsen_beschriftung.setY(length+18);
+      this.chart.getChildren().add(y_achsen_beschriftung);
    }
 
 
