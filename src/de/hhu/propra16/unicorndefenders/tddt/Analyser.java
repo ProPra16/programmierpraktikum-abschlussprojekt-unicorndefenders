@@ -295,6 +295,17 @@ public class Analyser {
       y_achse.setStrokeWidth(2.5);
       this.chart.getChildren().add(y_achse);
 
+      for(int x =0; x<10;x++) {
+         Line y_achse_queerstrich = new Line();
+         y_achse_queerstrich.setStartX(48);
+         y_achse_queerstrich.setStartY(length+20-x*length/10);
+         y_achse_queerstrich.setEndX(52);
+         y_achse_queerstrich.setEndY(length+20-x*length/10);
+         y_achse_queerstrich.setFill(Color.BLACK);
+         y_achse_queerstrich.setStrokeWidth(1);
+         this.chart.getChildren().add(y_achse_queerstrich);
+      }
+
       for (ArrayList<TrackPoint> j:phasen) {
          long temp_zeit=0;
          for (TrackPoint i : j) {
