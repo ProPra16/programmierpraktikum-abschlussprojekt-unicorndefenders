@@ -258,7 +258,7 @@ public class Analyser {
 
    public void toBarChart() throws Exception {
       long maxzeit = 0;
-      int k = 0;
+      int k = 1;
       int length=450;
       ArrayList<ArrayList<TrackPoint>> phasen= new ArrayList<ArrayList<TrackPoint>>();
       ArrayList<TrackPoint> temp_list= new ArrayList<TrackPoint>();
@@ -286,6 +286,15 @@ public class Analyser {
       this.chart.getChildren().add(new Rectangle());
       this.chart.getChildren().remove(0, this.chart.getChildren().size());
 
+      Line y_achse = new Line();
+      y_achse.setStartX(50);
+      y_achse.setStartY(length+20);
+      y_achse.setEndX(50);
+      y_achse.setEndY(0);
+      y_achse.setFill(Color.BLACK);
+      y_achse.setStrokeWidth(2.5);
+      this.chart.getChildren().add(y_achse);
+
       for (ArrayList<TrackPoint> j:phasen) {
          long temp_zeit=0;
          for (TrackPoint i : j) {
@@ -306,16 +315,16 @@ public class Analyser {
             rectangle.setHeight(length * i.getTime() / maxzeit);
             rectangle.setWidth(30);
 
-            /*
+
             //Trennt zwei Phasen durch eine Linie voneinander
             Line line = new Line();
-            line.setStartX(25);
-            line.setStartY(length * temp / maxzeit);
-            line.setEndX(45);
-            line.setEndY(length * temp / maxzeit);
+            line.setStartX(k*50);
+            line.setStartY(length-length * (i.getTime()+temp_zeit) / maxzeit);
+            line.setEndX(k*50+30);
+            line.setEndY(length-length * (i.getTime()+temp_zeit) / maxzeit);
             line.setFill(Color.BLACK);
             this.chart.getChildren().add(line);
-            */
+
          /*
          * Wenn auf die Phase geklickt wird,
          * wird der Inhalt derTextfelder durch den Code/Test
