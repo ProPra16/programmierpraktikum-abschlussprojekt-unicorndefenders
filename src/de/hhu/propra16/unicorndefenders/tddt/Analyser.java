@@ -384,6 +384,16 @@ public class Analyser {
 */
             temp_zeit+=i.getTime();
          }
+         Line x_achse_abschnitt = new Line();
+         x_achse_abschnitt.setStartX(k*50+15);
+         x_achse_abschnitt.setStartY(length+18);
+         x_achse_abschnitt.setEndX(k*50+15);
+         x_achse_abschnitt.setEndY(length+22);
+         x_achse_abschnitt.setFill(Color.BLACK);
+         x_achse_abschnitt.setStrokeWidth(1);
+         this.chart.getChildren().add(x_achse_abschnitt);
+
+
          k++;
          /*
          *Zeichnet die x-Achse des KoordinatenSystems
@@ -397,6 +407,12 @@ public class Analyser {
          x_achse.setStrokeWidth(2.5);
          this.chart.getChildren().add(x_achse);
 
+         if(k>1) {
+            Text text_phase = new Text("" + (k - 1));
+            text_phase.setX(50 * k + 15);
+            text_phase.setY(length + 50);
+            this.chart.getChildren().add(text_phase);
+         }
       }
    }
 
