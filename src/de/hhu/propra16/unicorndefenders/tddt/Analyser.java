@@ -255,6 +255,138 @@ public class Analyser {
       }
    }
 
+   public void toBarChart() throws Exception {
+      long maxzeit = 0;
+      int k = 0;
+      int length=500;
+      ArrayList<ArrayList<TrackPoint>> phasen= new ArrayList<ArrayList<TrackPoint>>();
+      ArrayList<TrackPoint> temp_list= new ArrayList<TrackPoint>();
+      boolean first_time=true;
+      boolean green=false;
+      for (TrackPoint i : this.trackPoints) {
+         if(i.getCycle()==RED&&first_time) {
+            first_time=false;
+         }
+         if(i.getCycle()==RED&&!first_time&&green) {
+            phasen.add(temp_list);
+            for(TrackPoint z:temp_list)temp_list.remove(0);
+            green=false;
+         }
+         if(i.getCycle()==GREEN) {
+            green=true;
+         }
+         temp_list.add(i);
+      }
+      phasen.add(temp_list);
+      for(ArrayList<TrackPoint> i:phasen) {
+         long temp_zeit=0;
+         for(TrackPoint j:i) {
+            temp_zeit+=j.getTime();
+         }
+         if(temp_zeit>maxzeit) maxzeit=temp_zeit;
+      }
+
+      this.chart.getChildren().add(new Rectangle());
+      this.chart.getChildren().remove(0, this.chart.getChildren().size());
+
+      for (ArrayList<TrackPoint> j:phasen) {
+         long temp_zeit=0;
+         for (TrackPoint i : j) {
+            int temp = 0;
+
+            /*
+            //Bildet die Dauer eines Zyklusses ab
+            Text text = new Text("" + temp);
+            text.setX(50);
+            text.setY(length * temp / maxzeit);
+            this.chart.getChildren().add(text);
+            */
+            //Erstellt ein Rechteck
+            Rectangle rectangle = new Rectangle();
+            rectangle.setFill(getColor(i));
+            rectangle.setX(k*50);
+            rectangle.setY(length-length * (i.getTime()+temp_zeit) / maxzeit);
+            rectangle.setHeight(length * i.getTime() / maxzeit);
+            rectangle.setWidth(30);
+
+            /*
+            //Trennt zwei Phasen durch eine Linie voneinander
+            Line line = new Line();
+            line.setStartX(25);
+            line.setStartY(length * temp / maxzeit);
+            line.setEndX(45);
+            line.setEndY(length * temp / maxzeit);
+            line.setFill(Color.BLACK);
+            this.chart.getChildren().add(line);
+            */
+         /*
+         * Wenn auf die Phase geklickt wird,
+         * wird der Inhalt derTextfelder durch den Code/Test
+         * der jeweiligen Phase überschrieben
+         *
+         * Diese TextFelder werden im TrackingResultwindow geladen
+         */
+
+            rectangle.setOnMouseClicked(event -> {
+               if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                  this.temp_code = i.getCode().getContent();
+                  this.temp_test = i.getTest().getContent();
+                  this.code.setText(i.getCode().getContent());
+                  this.test.setText(i.getTest().getContent());
+               }
+            });
+
+         /*
+         * Wenn der Mauscursor in die Phase eintritt, wird der
+         * Inhalt des Textfeldes temporär geändert
+          */
+
+            rectangle.setOnMouseEntered(event -> {
+
+               if (event.getEventType().equals(MouseEvent.MOUSE_ENTERED)) {
+                  this.temp_code = this.code.getText();
+                  this.temp_test = this.test.getText();
+                  this.code.setText(i.getCode().getContent());
+                  this.test.setText(i.getTest().getContent());
+               }
+
+            });
+
+         /*
+         * Wenn der Mauscursor die Phase verlässt,
+         * wird der Inhalt des Textfeldes auf den
+         * ursprünglichen Zustand zurückgesetzt.
+          */
+
+            rectangle.setOnMouseExited(event -> {
+
+               if (event.getEventType().equals(MouseEvent.MOUSE_EXITED)) {
+                  this.code.setText(this.temp_code);
+                  this.test.setText(this.temp_test);
+               }
+            });
+
+            this.chart.getChildren().add(rectangle);
+/*
+            temp += i.getTime();
+            if (temp == maxzeit) {
+               Text text2 = new Text("" + maxzeit);
+               text2.setX(50);
+               text2.setY(length);
+               this.chart.getChildren().add(text2);
+            }
+*/
+            temp_zeit+=i.getTime();
+         }
+         k++;
+      }
+   }
+
+
+
+
+
+
    /*
    * Gibt zu einer Phase die entsprechende Farbe als Color zurück
    */

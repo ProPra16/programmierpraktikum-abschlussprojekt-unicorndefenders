@@ -55,9 +55,18 @@ public class TrackingResultWindow extends Stage {
          }
       });
 
+      Button barchart = new Button("Säulendiagramm");
+      barchart.setOnMouseClicked(event -> {
+         try {
+            analyser.toBarChart();
+         } catch (Exception e) {
+         }
+      });
+
 
       hBox_in_leftVBox.getChildren().add(piechart);
       hBox_in_leftVBox.getChildren().add(bar);
+      hBox_in_leftVBox.getChildren().add(barchart);
 
       vBox_left.getChildren().add(hBox_in_leftVBox);
       vBox_left.getChildren().add(analyser.chart);
