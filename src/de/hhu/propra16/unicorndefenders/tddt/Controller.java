@@ -7,6 +7,8 @@ import de.hhu.propra16.unicorndefenders.tddt.config.Exercise;
 import de.hhu.propra16.unicorndefenders.tddt.files.*;
 import de.hhu.propra16.unicorndefenders.tddt.files.File;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -95,8 +97,13 @@ public class Controller implements Initializable {
    // falls erfolgreich kompiliert wird, soll der Timer aus der count()-Methode in BabyStepsConfig.java gestoppt werden
    static boolean successfullCompiling=false;
 
+   public static long sec;          // für die Methode count; falls keine Klassenvariable benutzt werden würde, Probleme in Lambda-Expressions
+   public static boolean stopThread=false;   // zum Stoppen vorheriger Threads genutzter Boolean-Wert
+
    // zur Überprüfung des Erreichens der 3.GREEN-Phase
    static int highscoreziel=0;
+
+   public static StringProperty sp = new SimpleStringProperty(null);   // StringProperty zur Aktualisierung der ablaufenden Zeit
 
    private String configFilePath;
 
@@ -209,7 +216,6 @@ public class Controller implements Initializable {
                   StoppUhr.starten();
 
                   babyStepsHandling();       // ggf. BabySteps
-                  babyStepsAbbruch();        // ggf. Abbruch von BabySteps
 
                }
 
@@ -313,10 +319,11 @@ public class Controller implements Initializable {
     * initialisiert Uebergang
     *
     */
+
    public void next(){
 
       // beende zuvor laufende Threads, um zeitliche Verzögerungen zu beseitigen
-      BabyStepsConfig.stopThread=true;
+      stopThread=true;     //schafft probleme!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       compileCode();
 
@@ -324,10 +331,8 @@ public class Controller implements Initializable {
       if (cycle == GREEN) {
          if (compilerManager.wasTestSuccessfull()) {
 
-             // wenn erfolgreiche Kompilierung, dann Abbruch des Timers für BabySteps
-             successfullCompiling = true;
 
-             // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
+            // Nach erfolgreicher gruenen Phase gibt es die Moeglichkeit, in Refactor zu wechseln
             // Frage dies ueber ein Alert ab
             Alert checkRefactor = new Alert(Alert.AlertType.CONFIRMATION);
             checkRefactor.setContentText("In den Modus REFACTOR wechseln?");
@@ -338,6 +343,7 @@ public class Controller implements Initializable {
             }
 
             if (goToRefactor) {
+
                StoppUhr.beenden();
                File code = new File("Code", codeArea.getText());
                File test = new File("Test", testArea.getText());
@@ -352,6 +358,7 @@ public class Controller implements Initializable {
                testArea.setStyle("-fx-border-color:#A4A4A4");
                codeArea.setStyle("-fx-border-color:#A4A4A4");
 
+
                // Button fuer neuen Phasenbeginn freigeben
                refactor.setDisable(false);
                next.setDisable(true);
@@ -361,6 +368,7 @@ public class Controller implements Initializable {
                File code = new File("Code", codeArea.getText());
                File test = new File("Test", testArea.getText());
                trackList.add(new TrackPoint(StoppUhr.zeit(), GREEN, code, test));
+               refactoring=false;
                initRedMode();
             }
          } else {
@@ -374,6 +382,8 @@ public class Controller implements Initializable {
                msg = msg + "Kompilieren fehlgeschlagen\n ";
                compilerMessages.setText(msg);
             }
+            stopThread=true;
+            continuecount(babyStepsTimer);
          }
       } else if (cycle == RED) {
          if (compilerManager.wasTestSuccessfull() || !compilerManager.wasCompilerSuccessfull()) {
@@ -388,6 +398,7 @@ public class Controller implements Initializable {
             msg = msg + "Es muss genau ein Test fehlschlagen, um in Phase GREEN zu wechseln:\n";
             compilerMessages.setText(msg);
             showFailedTests();
+            babyStepsHandling();
 
          }
       }
@@ -425,8 +436,9 @@ public class Controller implements Initializable {
          File code = new File("Code", codeArea.getText());
          File test = new File("Test", testArea.getText());
          trackList.add(new TrackPoint(StoppUhr.zeit(), REFACTOR, code, test));
-
+         refactoring=false;      ///
          initRedMode();
+
          refactor.setDisable(true);
          next.setDisable(false);
       }else{
@@ -437,6 +449,7 @@ public class Controller implements Initializable {
 
          }
       }
+      refactoring=false;
 
 
    }
@@ -455,7 +468,6 @@ public class Controller implements Initializable {
       StoppUhr.starten();
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
          babyStepsHandling();
-         babyStepsAbbruch();
       }
    }
 
@@ -474,10 +486,8 @@ public class Controller implements Initializable {
       cycle = GREEN;
       status.setText("GREEN");
       StoppUhr.starten();
-      if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
-         babyStepsHandling();
-         babyStepsAbbruch();
-      }
+      if(isBabyStepsEnabled) babyStepsHandling();
+
    }
 
    /*
@@ -496,7 +506,6 @@ public class Controller implements Initializable {
       StoppUhr.starten();
       if (isBabyStepsEnabled) {    // BabySteps durchführen und dann ggf. abbrechen
          babyStepsHandling();
-         babyStepsAbbruch();
       }
       backToRed.setDisable(true);
 
@@ -524,130 +533,205 @@ public class Controller implements Initializable {
 
    public void showHighscore(Event event) {
       if(highscoreziel==3) {
-          BabyStepsHighscore.handling();
-          BabyStepsHighscoreStage highscores = new BabyStepsHighscoreStage(BabyStepsHighscore.highscorestrings);
-          highscores.setTitle("BabySteps-TopFive zu " + BabyStepsHighscore.aufgabe);
-          highscores.show();
-          highscoreziel = 0;  // danach nicht mehr möglich
+         BabyStepsHighscore.handling();
+         BabyStepsHighscoreStage highscores = new BabyStepsHighscoreStage(BabyStepsHighscore.highscorestrings);
+         highscores.setTitle("BabySteps-TopFive zu " + BabyStepsHighscore.aufgabe);
+         highscores.show();
+         highscoreziel = 0;  // danach nicht mehr möglich
       }
    }
 
 
    public void babyStepsHandling() {  // führt BabySteps aus
 
-      // etwaigen vorigen Thread aus der count-Methode in BabyStepsConfig.java stoppen, damit dieser nicht weiterläuft
-      // und nicht doppelt runtergezählt wird
-      BabyStepsConfig.stopThread = true;
+      stopThread=true;
+
+      try{
+         Thread.sleep(1000);
+      }
+      catch(InterruptedException e){
+         e.printStackTrace();
+      }
 
       if (isBabyStepsEnabled && cycle != REFACTOR) {   // BabySteps nur, wenn eingeschaltet und nicht in der Refactoring-Phase
-
-         // damit stopThread im Thread der count()-Methode in BabyStepsConfig.java wirken kann, eine Sekunde warten,
-         // da dort auch stets eine Sekunde gewartet wird; stopthread wird nämlich weiter unten wiederauf false gesetzt,
-         // damit ein neuer Thread in count() starten kann
-         try{
-            Thread.sleep(1000);
-         }
-         catch (InterruptedException e) {
-            e.printStackTrace();
-         }
 
          if (cycle == RED) {                                 // alten Inhalt des Test-Editors speichern
             puffer = testArea.getText();
          }
-         if (cycle == GREEN) {                               // alten Inhalt des Code-Editors speichern
+         else if (cycle == GREEN) {                               // alten Inhalt des Code-Editors speichern
             puffer = codeArea.getText();
          }
 
-         BabyStepsConfig.init(babyStepsTimeinSeconds, babyStepsTimer); // Anfangswert des Labels setzen
 
-         // weiter oben auf true gesetzt, damit ein eventuell noch laufender alter Thread abbricht
-         // damit neuer Thread  in BabyStepsConfig.count() möglich, jetzt wieder auf false gesetzt
-         BabyStepsConfig.stopThread = false;
-         BabyStepsConfig.sec = babyStepsTimeinSeconds;           // Anzahl Sekunden setzen
-         BabyStepsConfig.count(babyStepsTimer);                  // Timer runterzählen
+         stopThread=false;
+         sec = babyStepsTimeinSeconds;           // Anzahl Sekunden setzen
+         init(babyStepsTimeinSeconds, babyStepsTimer); // Anfangswert des Labels setzen
+         count(babyStepsTimer);                  // Timer runterzählen
 
 
-
+      } else {                                                            // wenn babySteps=nein oder Refactoring-Phase
+         init(babyStepsTimeinSeconds, babyStepsTimer); // damit das Label an StringProperty sp gebunden wird
+         sp.setValue("");                              // sp auf leer gesetzt
       }
-      else{                                                            // wenn babySteps=nein oder Refactoring-Phase
-         BabyStepsConfig.init(babyStepsTimeinSeconds, babyStepsTimer); // damit das Label an StringProperty sp gebunden wird
-         BabyStepsConfig.sp.setValue("");                              // sp auf leer gesetzt
-      }
+   }
+
+   public static void init(long sec, Label label) {          // erzeugt Zeit-Label in Abhängigkeit von der konfigurierten Dauer
+
+      long minutes=sec/60;    //Minutenanzahl
+
+      long seconds=sec%60;    //Sekundenanzahl
+
+      if(seconds>9)  sp.setValue(minutes+":"+seconds);   //Setze den Anfangswert der StringProperty
+      else  sp.setValue(minutes+":0"+seconds);
+
+      label.textProperty().bind(sp);     // binde die StringProperty an das Label
 
    }
 
-   // Methode setzt den Zustand der TextAreas zurück, falls die Zeit abgelaufen ist d.h. falls der Timer aus
-   // BabyStepsConfig.count() 0:00 erreicht
-   public void babyStepsAbbruch(){
 
-      Thread t = new Thread(() -> {             // weiterer Thread, damit parallel Aktionen möglich sind
-         while (true) {
-            if(babyStepsTimer.getText().equals("0:01")) {
-               try {
-                  // dann 0:00 im Thread von BabyStepsConfig.count() erreicht
-                  // in der if-Bedingung wird bewusst nicht 0:00 verwendet, da der andere Thread früher startet
-                  // und die Threads deshalb zeitlich versetzt laufen
-                  Thread.sleep(1000);
+   public void count(Label label){   // zählt die Zeit des Timer-Labels runter
+
+      BabyStepsStoppUhr.starten();     // Zeitmessung für die Highscores
+
+      Thread t = new Thread(() -> {         // damit parallel Aktionen möglich sind, neuen Thread erstellen
+
+
+         while (!label.getText().equals("0:01")) {  // bis 0:00 erreicht wird, wird die Zeit runtergezählt
+            try{
+
+               // wenn eine Kompilierung erfolreich war, dann Schleife abbrechen
+               if(successfullCompiling){
+                  successfullCompiling=false;
+                  break;
                }
-               catch(InterruptedException e){
-                  e.printStackTrace();
+
+               if(stopThread) break;
+               Thread.sleep(1000);
+               sec=sec-1;                               // runterzählen der Zeit
+               if(stopThread) break;
+
+               // Berechne die aktuelle Zeit im gewünschten Format und setze den Wert der StringProperty
+               long minutes=sec/60;
+               long seconds= sec%60;
+               if(seconds>=10) {
+                  Platform.runLater( () -> sp.setValue(minutes + ":" + seconds)); // Platform.runLater behebt das Problem, dass Updates der GUI nicht
+               }                                                                  // auf einem Nicht-FX Application Thread ausgeführt werden können
+               else{
+                  Platform.runLater( () -> sp.setValue(minutes + ":0" + seconds));
                }
-               if (cycle == RED) {
 
-                  testArea.setText(puffer);        // Test-Editor-Inhalt zurücksetzen, da Zeit abgelaufen
-
+               // wenn man zwischenzeitlich in die REFACTOR-Phase gewechselt hat, soll der Timer gestoppt werden
+               // refactoring-Variable wird im Controller auf true gesetzt
+               if(refactoring){
+                  refactoring=false;
+                  break;
                }
-               if (cycle == GREEN) {
-
-                  codeArea.setText(puffer);        // Code-Editor-Inhalt zurücksetzen, da Zeit abgelaufen
-
-               }
-               break;                              // wenn die Zeit abgelaufen ist, auch diese Schleife abbrechen
             }
-            if (cycle==REFACTOR){      // wenn zwischenzeitlich REFACTOR gewählt wurde, alle Nicht-Main-Threads abbrechen
-               refactoring=true;       // führt zum Abbruch des Threads in BabyStepsConfig.count()
-                // ggf. BabyStepsConfig.sp.setValue("")
-               break;
-            }
-
-            // damit Thread nicht umsonst weiter läuft, Abbruch, sobald BabyStepsConfig.count() auch fertig
-            // zB. im Falle einer erfolgreichen Kompilierung
-            if(finished){
-               finished=false;
-               break;
+            catch (InterruptedException e) {
+               e.printStackTrace();
             }
 
          }
 
-         // wenn die Zeit abgelaufen ist, wird in die Phase zuvor gewechselt
-         // und davor die jeweilige TextArea zurückgesetzt
-
-         if(babyStepsTimer.getText().equals("0:00")){
-
-            //breche zuvor laufende Threads ab, um zeitliche Verzögerungen zu vermeiden
-            BabyStepsConfig.stopThread=true;
-
-            // Wechsle bei einem Abbruch in die vorige Phase
-
-            if(cycle==RED){
-
-               Platform.runLater(()->initGreenMode());
-
+         if(babyStepsTimer.getText().equals("0:01")) {
+            if (cycle == RED) {
+               sec = babyStepsTimeinSeconds;
+               testArea.setText(puffer);
+               Platform.runLater(() ->initGreenMode());        // Test-Editor-Inhalt zurücksetzen, da Zeit abgelaufen
+            } else if (cycle == GREEN) {
+               sec = babyStepsTimeinSeconds;
+               codeArea.setText(puffer);
+               Platform.runLater(() -> initRedMode());        // Test-Editor-Inhalt zurücksetzen, da Zeit abgelaufen
             }
-            else if(cycle==GREEN){
-
-               Platform.runLater(()->initRedMode());
-
-            }
-
          }
+
+         sec = babyStepsTimeinSeconds;
+         BabyStepsStoppUhr.beenden();  //Zeitmessung für die Highscores
 
       });
 
-      t.start();  // Starte den Thread t
+      t.start();      // Starte den Thread t
 
    }
 
+   // diese Methode soll das Weiterrunterzählen nach Tätigung des Next-Buttons gewährleisten
+
+   public void continuecount(Label label){
+
+      String labeltext=label.getText();
+
+      int seconds=0;
+
+      // Umwandlung des Strings in Sekunden
+      if(labeltext.length()==5){
+
+         String min=""+labeltext.charAt(0);
+         min=min+labeltext.charAt(1);
+         int minutes=Integer.parseInt(min);
+         String sec=""+labeltext.charAt(3);
+         int secs=0;
+
+         if(sec.equals("0")){
+            String temp=""+ labeltext.charAt(4);
+            secs=Integer.parseInt(temp);
+         }
+         else{
+            sec=sec+labeltext.charAt(4);
+            secs=Integer.parseInt(sec);
+         }
+
+         seconds=minutes*60+secs;
+      }
+      else{
+
+         String min=""+labeltext.charAt(0);
+         int minutes=Integer.parseInt(min);
+         String sec=""+labeltext.charAt(2);
+         int secs=0;
+
+         if(sec.equals("0")){
+            String temp=""+ labeltext.charAt(3);
+            secs=Integer.parseInt(temp);
+         }
+         else{
+            sec=sec+labeltext.charAt(3);
+            secs=Integer.parseInt(sec);
+         }
+
+         seconds=minutes*60+secs;
+      }
+
+      stopThread=true;
+
+      try{
+         Thread.sleep(1000);
+      }
+      catch(InterruptedException e){
+         e.printStackTrace();
+      }
+
+      if (isBabyStepsEnabled && cycle != REFACTOR) {   // BabySteps nur, wenn eingeschaltet und nicht in der Refactoring-Phase
+
+         if (cycle == RED) {                                 // alten Inhalt des Test-Editors speichern
+            puffer = testArea.getText();
+         }
+         else if (cycle == GREEN) {                               // alten Inhalt des Code-Editors speichern
+            puffer = codeArea.getText();
+         }
+
+
+         stopThread=false;
+         sec = seconds;           // Anzahl Sekunden setzen
+         init(sec, babyStepsTimer); // Anfangswert des Labels setzen
+         count(babyStepsTimer);                  // Timer runterzählen
+
+
+      } else {                                                            // wenn babySteps=nein oder Refactoring-Phase
+         init(babyStepsTimeinSeconds, babyStepsTimer); // damit das Label an StringProperty sp gebunden wird
+         sp.setValue("");                              // sp auf leer gesetzt
+      }
+
+   }
 
 
 }
