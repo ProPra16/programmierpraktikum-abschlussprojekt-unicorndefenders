@@ -59,7 +59,7 @@ public class BabyStepsHighscore {
     // zum Anlegen und Sortieren von Highscorelisten
     public static void handling() {
 
-        BabyStepsConfig.stopThread = true; //stoppe den Timer, wenn die Highscorezeit eingetragen werden soll
+        Controller.stopThread = true; //stoppe den Timer, wenn die Highscorezeit eingetragen werden soll
 
         // Liste mit den Highscores aus der Datei und dem neuen hinzuzufügenden Highscore
         List<HighScore> highscoreliste = new ArrayList<>();
